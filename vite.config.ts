@@ -13,8 +13,19 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
+                bunny('Open Sans', {
+                    weights: [400, 500, 600, 700],
+                    preload: [{ weight: 400 }, { weight: 600 }],
+                }),
+                bunny('Playfair Display', {
                     weights: [400, 500, 600],
+                    styles: ['normal', 'italic'],
+                    preload: [{ weight: 500, style: 'normal' }],
+                }),
+                bunny('Noto Sans Arabic', {
+                    weights: [500],
+                    subsets: ['arabic'],
+                    preload: false,
                 }),
             ],
         }),

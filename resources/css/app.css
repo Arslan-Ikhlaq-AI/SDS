@@ -9,9 +9,32 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+        'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display:
+        'Playfair Display', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-arabic: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+
+    --color-plum-950: #1b0e36;
+    --color-plum-900: #25104b;
+    --color-plum-800: #2e1760;
+    --color-plum-700: #3a1d71;
+    --color-plum-600: #4c2d8f;
+    --color-plum-100: #e9e4f3;
+    --color-plum-50: #f7f5fb;
+    --color-tangerine-600: #dd830b;
+    --color-tangerine-500: #f6981c;
+    --color-tangerine-400: #f9ad45;
+    --color-ink: #11172f;
+    --color-body: #3a374a;
+    --color-soft: #625f70;
+    --color-hairline: #e4e1ea;
+    --color-tile: #f4f0ef;
+    --color-paper: #fcfcfc;
+    --color-navy: #1a2237;
+
+    --animate-scroll-cue: scroll-cue 1.9s ease-in-out infinite;
+    --animate-soft-ping: soft-ping 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -139,5 +162,165 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@keyframes scroll-cue {
+    0%,
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    60% {
+        opacity: 0.2;
+        transform: translateY(9px);
+    }
+}
+
+@keyframes soft-ping {
+    0% {
+        opacity: 0.55;
+        transform: scale(1);
+    }
+
+    80%,
+    100% {
+        opacity: 0;
+        transform: scale(1.55);
+    }
+}
+
+@utility site-container {
+    width: 100%;
+    max-width: 1360px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+
+    @media (width >= 40rem) {
+        padding-inline: 2rem;
+    }
+
+    @media (width >= 64rem) {
+        padding-inline: 2.25rem;
+    }
+}
+
+/*
+ * The public website is a fixed light design, so it re-declares the light tokens
+ * and stays light even when the visitor's device is in dark mode.
+ */
+html:has(.site-theme) {
+    background-color: #ffffff;
+    color-scheme: light;
+}
+
+.site-theme,
+.site-sheet {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --border: var(--color-hairline);
+    --ring: var(--color-plum-600);
+    color-scheme: light;
+}
+
+.site-theme {
+    --site-gutter: 1.25rem;
+    background-color: var(--color-paper);
+    color: var(--color-body);
+
+    @media (width >= 40rem) {
+        --site-gutter: 2rem;
+    }
+
+    @media (width >= 64rem) {
+        --site-gutter: max(2.25rem, calc((100vw - 1360px) / 2 + 2.25rem));
+    }
+
+    ::selection {
+        background-color: var(--color-tangerine-400);
+        color: var(--color-plum-950);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-plum-600);
+        outline-offset: 2px;
+    }
+}
+
+.legal-prose {
+    color: var(--color-body);
+    font-size: 1rem;
+    line-height: 1.75;
+
+    h2 {
+        margin-top: 2.75rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--color-hairline);
+        color: var(--color-ink);
+        font-family: var(--font-display);
+        font-size: 1.625rem;
+        font-weight: 500;
+        line-height: 1.25;
+    }
+
+    h3 {
+        margin-top: 2rem;
+        color: var(--color-plum-800);
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
+
+    h4 {
+        margin-top: 1.5rem;
+        color: var(--color-ink);
+        font-weight: 600;
+    }
+
+    p {
+        margin-top: 0.875rem;
+    }
+
+    ul {
+        margin-top: 0.875rem;
+        padding-left: 1.25rem;
+        list-style: disc;
+    }
+
+    ul ul {
+        margin-top: 0.5rem;
+    }
+
+    li {
+        margin-top: 0.5rem;
+    }
+
+    li::marker {
+        color: var(--color-tangerine-500);
+    }
+
+    li p {
+        margin-top: 0;
+    }
+
+    strong {
+        color: var(--color-ink);
+        font-weight: 600;
+    }
+
+    a {
+        color: var(--color-plum-600);
+        overflow-wrap: anywhere;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    a:hover {
+        color: var(--color-plum-800);
     }
 }
