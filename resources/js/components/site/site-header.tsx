@@ -14,7 +14,7 @@ import {
     Store,
     Tag,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ComponentType, ReactNode, SVGProps } from 'react';
 import {
     FacebookIcon,
@@ -141,14 +141,18 @@ function socialLinksFor(site: SiteDetails): {
     ];
 }
 
+/**
+ * A top-level menu item: a pill the sliding highlight sits behind, with a
+ * tangerine dot under the current page.
+ */
 function navItemClasses(tone: Tone, isActive: boolean): string {
     return cn(
-        'relative inline-flex h-10 items-center text-[13.5px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-200',
-        'after:absolute after:inset-x-0 after:bottom-0.5 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-tangerine-500 after:transition-transform after:duration-300 after:content-[""] hover:after:scale-x-100',
+        'relative z-10 inline-flex h-11 items-center rounded-full px-3.5 text-[14.5px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-200 xl:px-4 xl:text-[15.5px]',
+        'after:absolute after:bottom-[5px] after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:scale-0 after:rounded-full after:bg-tangerine-400 after:transition-transform after:duration-300 after:content-[""]',
         tone === 'light'
-            ? 'text-white/80 hover:text-white'
-            : 'text-ink/75 hover:text-plum-800',
-        isActive && 'after:scale-x-100',
+            ? 'text-white/85 hover:text-white'
+            : 'text-ink/80 hover:text-plum-800',
+        isActive && 'after:scale-100',
         isActive && (tone === 'light' ? 'text-white' : 'text-plum-800'),
     );
 }
@@ -174,7 +178,7 @@ function UtilityBar() {
     const socialLinks = socialLinksFor(site);
 
     return (
-        <div className="hidden h-[38px] border-b border-white/10 bg-plum-950/55 text-[12px] text-white/70 backdrop-blur-md lg:block">
+        <div className="hidden h-[38px] border-b border-white/10 bg-plum-950/55 text-[12.5px] text-white/70 backdrop-blur-md lg:block">
             <div className="site-container flex h-full items-center justify-between gap-6">
                 <ul className="flex items-center gap-6">
                     <li>
@@ -205,10 +209,13 @@ function UtilityBar() {
                     </li>
                 </ul>
                 <div className="flex items-center gap-5">
-                    <p className="tracking-[0.1em] uppercase">
+                    <p className="hidden tracking-[0.1em] uppercase xl:block">
                         {site.cities.join(' • ')}
                     </p>
-                    <span aria-hidden="true" className="h-4 w-px bg-white/15" />
+                    <span
+                        aria-hidden="true"
+                        className="hidden h-4 w-px bg-white/15 xl:block"
+                    />
                     <ul className="flex items-center gap-3.5">
                         {socialLinks.map((social) => (
                             <li key={social.label}>
@@ -270,10 +277,10 @@ function MenuEntryLink({ entry }: { entry: MenuEntry }) {
                     )}
                 </span>
                 <span>
-                    <span className="block text-[13.5px] font-semibold text-plum-900">
+                    <span className="block text-[14.5px] font-semibold text-plum-900">
                         {entry.label}
                     </span>
-                    <span className="mt-0.5 block text-xs leading-snug text-soft">
+                    <span className="mt-0.5 block text-[12.5px] leading-snug text-soft">
                         {entry.description}
                     </span>
                 </span>
@@ -285,7 +292,7 @@ function MenuEntryLink({ entry }: { entry: MenuEntry }) {
 function triggerClasses(tone: Tone, isActive: boolean): string {
     return cn(
         navItemClasses(tone, isActive),
-        'h-10! rounded-none! bg-transparent! px-0! py-0! hover:bg-transparent! focus:bg-transparent! data-[state=open]:bg-transparent! data-[state=open]:after:scale-x-100',
+        'h-11! rounded-full! bg-transparent! px-3.5! py-0! hover:bg-transparent! focus:bg-transparent! data-[state=open]:bg-transparent! data-[state=open]:after:scale-100 xl:px-4! [&>svg]:ml-1.5 [&>svg]:size-3.5 [&>svg]:opacity-70',
         tone === 'light'
             ? 'focus:text-white data-[state=open]:text-white'
             : 'focus:text-plum-800 data-[state=open]:text-plum-800',
@@ -293,7 +300,37 @@ function triggerClasses(tone: Tone, isActive: boolean): string {
 }
 
 function DesktopNavigation({ tone }: { tone: Tone }) {
-    const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
+    const { currentUrl, isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
+    const activeItemRef = useRef<HTMLLIElement | null>(null);
+    const [highlight, setHighlight] = useState<{
+        left: number;
+        width: number;
+    } | null>(null);
+
+    const isHome = isCurrentUrl(home());
+    const isServices = isCurrentUrl(services());
+    const isProperties = isCurrentOrParentUrl(propertiesIndex());
+    const isAbout = isCurrentUrl(about());
+    const isContact = isCurrentUrl(contact());
+
+    /**
+     * Slide the highlight behind an item, or hide it when there is nothing to sit behind.
+     */
+    const highlightItem = (item: HTMLLIElement | null): void => {
+        setHighlight(
+            item ? { left: item.offsetLeft, width: item.offsetWidth } : null,
+        );
+    };
+
+    useEffect(() => {
+        highlightItem(activeItemRef.current);
+    }, [currentUrl]);
+
+    const itemProps = (isActive: boolean) => ({
+        ref: isActive ? activeItemRef : undefined,
+        onMouseEnter: (event: React.MouseEvent<HTMLLIElement>) =>
+            highlightItem(event.currentTarget),
+    });
 
     return (
         <NavigationMenu
@@ -302,24 +339,36 @@ function DesktopNavigation({ tone }: { tone: Tone }) {
             skipDelayDuration={400}
             className="hidden lg:flex"
         >
-            <NavigationMenuList className="gap-[clamp(1.25rem,2.4vw,2.25rem)]">
-                <NavigationMenuItem>
+            <NavigationMenuList
+                className="relative gap-0.5"
+                onMouseLeave={() => highlightItem(activeItemRef.current)}
+            >
+                <li
+                    aria-hidden="true"
+                    className={cn(
+                        'pointer-events-none absolute top-1/2 h-11 -translate-y-1/2 rounded-full transition-[left,width,opacity] duration-300 ease-out',
+                        tone === 'light' ? 'bg-white/12' : 'bg-plum-50',
+                        highlight ? 'opacity-100' : 'opacity-0',
+                    )}
+                    style={{
+                        left: highlight?.left ?? 0,
+                        width: highlight?.width ?? 0,
+                    }}
+                />
+                <NavigationMenuItem {...itemProps(isHome)}>
                     <Link
                         href={home()}
                         prefetch
-                        aria-current={isCurrentUrl(home()) ? 'page' : undefined}
-                        className={navItemClasses(tone, isCurrentUrl(home()))}
+                        aria-current={isHome ? 'page' : undefined}
+                        className={navItemClasses(tone, isHome)}
                     >
                         Home
                     </Link>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem value="services">
+                <NavigationMenuItem value="services" {...itemProps(isServices)}>
                     <NavigationMenuTrigger
-                        className={triggerClasses(
-                            tone,
-                            isCurrentUrl(services()),
-                        )}
+                        className={triggerClasses(tone, isServices)}
                     >
                         Services
                     </NavigationMenuTrigger>
@@ -366,12 +415,12 @@ function DesktopNavigation({ tone }: { tone: Tone }) {
                     </MenuPanel>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem value="properties">
+                <NavigationMenuItem
+                    value="properties"
+                    {...itemProps(isProperties)}
+                >
                     <NavigationMenuTrigger
-                        className={triggerClasses(
-                            tone,
-                            isCurrentOrParentUrl(propertiesIndex()),
-                        )}
+                        className={triggerClasses(tone, isProperties)}
                     >
                         Properties
                     </NavigationMenuTrigger>
@@ -401,29 +450,22 @@ function DesktopNavigation({ tone }: { tone: Tone }) {
                     </MenuPanel>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem>
+                <NavigationMenuItem {...itemProps(isAbout)}>
                     <Link
                         href={about()}
                         prefetch
-                        aria-current={
-                            isCurrentUrl(about()) ? 'page' : undefined
-                        }
-                        className={navItemClasses(tone, isCurrentUrl(about()))}
+                        aria-current={isAbout ? 'page' : undefined}
+                        className={navItemClasses(tone, isAbout)}
                     >
                         About
                     </Link>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
+                <NavigationMenuItem {...itemProps(isContact)}>
                     <Link
                         href={contact()}
                         prefetch
-                        aria-current={
-                            isCurrentUrl(contact()) ? 'page' : undefined
-                        }
-                        className={navItemClasses(
-                            tone,
-                            isCurrentUrl(contact()),
-                        )}
+                        aria-current={isContact ? 'page' : undefined}
+                        className={navItemClasses(tone, isContact)}
                     >
                         Contact
                     </Link>
@@ -626,7 +668,7 @@ export function SiteHeader() {
                     <div
                         className={cn(
                             'site-container flex items-center justify-between gap-6 transition-[height] duration-500',
-                            isScrolled ? 'h-[64px]' : 'h-[76px]',
+                            isScrolled ? 'h-[68px]' : 'h-[82px]',
                         )}
                     >
                         <Link
@@ -646,7 +688,7 @@ export function SiteHeader() {
                                 href={propertiesIndex()}
                                 aria-label="Search properties"
                                 className={cn(
-                                    'hidden size-10 items-center justify-center rounded-full border transition-colors lg:flex',
+                                    'hidden size-11 items-center justify-center rounded-full border transition-colors lg:flex',
                                     tone === 'light'
                                         ? 'border-white/25 text-white hover:bg-white/10'
                                         : 'border-plum-700/20 text-plum-800 hover:bg-plum-50',
@@ -665,7 +707,7 @@ export function SiteHeader() {
                             >
                                 <span
                                     className={cn(
-                                        'flex size-10 items-center justify-center rounded-full border',
+                                        'flex size-11 items-center justify-center rounded-full border',
                                         tone === 'light'
                                             ? 'border-white/25'
                                             : 'border-plum-700/20',
@@ -680,20 +722,20 @@ export function SiteHeader() {
                                     <span className="block text-[10.5px] tracking-[0.14em] uppercase opacity-60">
                                         Call us
                                     </span>
-                                    <span className="text-[13.5px] font-semibold">
+                                    <span className="text-[14.5px] font-semibold">
                                         {site.phone_display}
                                     </span>
                                 </span>
                             </a>
                             <Link
                                 href={contact()}
-                                className="group hidden h-10 items-center gap-2 rounded-full bg-tangerine-500 pr-4 pl-5 text-[13px] font-semibold whitespace-nowrap text-plum-950 transition-colors duration-200 hover:bg-tangerine-400 sm:inline-flex"
+                                className="group hidden h-11 items-center gap-2 rounded-full bg-tangerine-500 pr-5 pl-6 text-[14px] font-semibold whitespace-nowrap text-plum-950 transition-colors duration-200 hover:bg-tangerine-400 sm:inline-flex"
                             >
-                                <HouseIcon className="size-3.5" />
+                                <HouseIcon className="size-4" />
                                 Get in Touch
                                 <ArrowRight
                                     aria-hidden="true"
-                                    className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                                    className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
                                 />
                             </Link>
                             <MobileNavigation tone={tone} />

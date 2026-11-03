@@ -83,7 +83,7 @@ export function HomeHero({ budgets }: { budgets: SelectOption[] }) {
     };
 
     return (
-        <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-plum-950 pt-[76px] lg:pt-[114px]">
+        <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-plum-950 pt-[82px] lg:pt-[120px]">
             <HeroFilm />
             <div
                 aria-hidden="true"
