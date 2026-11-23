@@ -1,5 +1,4 @@
 import { Link } from '@inertiajs/react';
-import { Play } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { HeroSearch } from '@/components/site/hero-search';
 import { HeroWave } from '@/components/site/hero-wave';
@@ -10,12 +9,6 @@ import { index as propertiesIndex } from '@/routes/properties';
 import type { SelectOption } from '@/types/site';
 
 const POSTER = '/images/home-hero-poster.webp';
-
-const heroStats = [
-    { value: '80+', label: 'Properties' },
-    { value: '5k+', label: 'Happy Clients' },
-    { value: '80+', label: 'Team Members' },
-];
 
 const quickLinks = [
     { label: 'Off-Plan Projects', query: { type: 'off-plan' } },
@@ -76,14 +69,8 @@ function HeroFilm() {
 export function HomeHero({ budgets }: { budgets: SelectOption[] }) {
     const site = useSite();
 
-    const scrollToContent = (): void => {
-        document
-            .getElementById('what-we-offer')
-            ?.scrollIntoView({ behavior: 'smooth' });
-    };
-
     return (
-        <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-plum-950 pt-[82px] lg:pt-[120px]">
+        <section className="relative isolate flex min-h-[calc(100svh+clamp(44px,8vw,116px))] flex-col overflow-hidden bg-plum-950 pt-[82px] lg:pt-[134px]">
             <HeroFilm />
             <div
                 aria-hidden="true"
@@ -94,34 +81,41 @@ export function HomeHero({ budgets }: { budgets: SelectOption[] }) {
                 className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(14,7,30,0.45)_100%)]"
             />
 
-            <div className="relative site-container flex flex-1 flex-col items-center justify-center pt-12 pb-10 text-center lg:pt-9 lg:pb-6">
-                <Eyebrow tone="light" centered>
+            <div className="relative site-container flex flex-1 flex-col items-center justify-center pt-14 pb-[calc(clamp(44px,8vw,116px)+3rem)] text-center lg:pt-[clamp(1.5rem,5vh,4.5rem)] lg:pb-[calc(clamp(44px,8vw,116px)+clamp(2rem,5vh,3.5rem))]">
+                <Eyebrow
+                    tone="light"
+                    centered
+                    className="text-[13px] font-bold tracking-[0.24em] [text-shadow:0_1px_12px_rgba(14,7,30,0.7)] sm:text-[14px]"
+                >
                     {site.legal_name}
                 </Eyebrow>
-                <h1 className="mt-4 flex flex-col items-center">
-                    <span className="font-display text-[clamp(1.25rem,1.8vw,1.625rem)] font-normal text-tangerine-400 italic">
+                <h1 className="mt-4 flex flex-col items-center lg:mt-[clamp(0.625rem,1.8vh,1rem)]">
+                    <span className="font-display text-[clamp(1.375rem,2.1vw,1.875rem)] font-medium text-[#ffc56f] italic [text-shadow:0_2px_18px_rgba(14,7,30,0.75)] lg:text-[clamp(1.25rem,min(2.1vw,3.6vh),1.875rem)]">
                         Welcome to {site.name},
                     </span>
-                    <span className="mt-1.5 max-w-[22ch] font-display text-[clamp(2.25rem,4.5vw,4rem)] leading-[1.08] font-medium tracking-[-0.01em] text-white">
+                    <span className="mt-1.5 max-w-[22ch] font-display text-[clamp(2.25rem,4.5vw,4rem)] leading-[1.08] font-medium tracking-[-0.01em] text-white lg:text-[clamp(2.5rem,min(4.5vw,6.2vh),4rem)]">
                         The Best Real Estate
                         <br className="hidden sm:inline" />{' '}
                         <Highlight>Agency</Highlight> in Dubai
                     </span>
                 </h1>
-                <p className="mt-5 max-w-[46rem] text-[15px] leading-relaxed text-white/82 sm:text-base">
-                    {site.name} Brokerage makes real estate in Dubai effortless.
-                    Either it’s buying and selling property in Dubai, exploring
-                    premium Dubai Off Plan Projects, or finding labor camps,
-                    Shops, Offices, Residential &amp; Commercial Apartments for
-                    rent, we bring you the best deals with zero hassle.
+                <p className="mt-5 max-w-[45rem] text-[15.5px] leading-[1.75] tracking-[0.005em] text-pretty text-white/90 [text-shadow:0_1px_14px_rgba(14,7,30,0.65)] sm:text-[17px] lg:mt-[clamp(0.75rem,2.2vh,1.25rem)] lg:[@media(max-height:820px)]:max-w-[54rem] lg:[@media(max-height:820px)]:text-[15.5px] lg:[@media(max-height:820px)]:leading-[1.6]">
+                    <span className="font-semibold text-white">
+                        {site.name}
+                    </span>{' '}
+                    makes real estate in Dubai effortless. Either it’s buying
+                    and selling property in Dubai, exploring premium Dubai Off
+                    Plan Projects, or finding labor camps, Shops, Offices,
+                    Residential &amp; Commercial Apartments for rent, we bring
+                    you the best deals with zero hassle.
                 </p>
 
                 <HeroSearch
                     budgets={budgets}
-                    className="mt-7 w-full max-w-5xl"
+                    className="mt-7 w-full max-w-5xl lg:mt-[clamp(0.875rem,2.6vh,1.75rem)]"
                 />
 
-                <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-[12.5px]">
+                <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-[12.5px] lg:mt-[clamp(0.75rem,2vh,1.25rem)]">
                     <li className="mr-1 text-white/55">Popular:</li>
                     {quickLinks.map((link) => (
                         <li key={link.label}>
@@ -138,52 +132,6 @@ export function HomeHero({ budgets }: { budgets: SelectOption[] }) {
                 </ul>
             </div>
 
-            <div className="relative site-container hidden items-center justify-between pb-[clamp(3.5rem,8.2vw,7.75rem)] text-[12.5px] text-white/80 lg:flex">
-                <dl className="flex items-center divide-x divide-white/20">
-                    {heroStats.map((stat) => (
-                        <div
-                            key={stat.label}
-                            className="flex items-baseline gap-1.5 px-4 first:pl-0 last:pr-0"
-                        >
-                            <dd className="font-display text-xl text-white lining-nums">
-                                {stat.value}
-                            </dd>
-                            <dt className="text-white/70">{stat.label}</dt>
-                        </div>
-                    ))}
-                </dl>
-                <button
-                    type="button"
-                    onClick={scrollToContent}
-                    className="flex cursor-pointer items-center gap-3 transition-colors hover:text-white"
-                >
-                    <span
-                        aria-hidden="true"
-                        className="flex h-[34px] w-[21px] justify-center rounded-full border border-white/70 pt-1.5"
-                    >
-                        <span className="h-1.5 w-0.5 animate-scroll-cue rounded-full bg-white motion-reduce:animate-none" />
-                    </span>
-                    Scroll to Discover
-                </button>
-                <a
-                    href={site.social.youtube}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group flex items-center gap-3 transition-colors hover:text-white"
-                >
-                    <span className="relative flex size-11 items-center justify-center rounded-full border border-white/40 bg-white/10 backdrop-blur-sm transition-colors group-hover:bg-white group-hover:text-plum-800">
-                        <span
-                            aria-hidden="true"
-                            className="absolute inset-0 animate-soft-ping rounded-full border border-white/40 motion-reduce:animate-none"
-                        />
-                        <Play
-                            aria-hidden="true"
-                            className="relative ml-0.5 size-4 fill-current"
-                        />
-                    </span>
-                    Watch our story
-                </a>
-            </div>
             <HeroWave />
         </section>
     );

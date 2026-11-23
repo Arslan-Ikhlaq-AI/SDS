@@ -1,20 +1,13 @@
 <?php
 
-use App\Models\Property;
 use Inertia\Testing\AssertableInertia as Assert;
 
-test('the homepage shows the three newest featured listings and the budget options', function () {
-    $featured = Property::factory()->featured()->count(4)->create();
-    $unfeatured = Property::factory()->create();
-
+test('the homepage shows the budget options for the hero search', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('site/home')
-            ->has('featuredProperties', 3)
-            ->where('featuredProperties.0.id', $featured->last()->id)
-            ->where('featuredProperties', fn ($listings) => ! collect($listings)->contains('id', $unfeatured->id)
-                && ! collect($listings)->contains('id', $featured->first()->id))
+            ->missing('featuredProperties')
             ->has('budgets', 15)
             ->where('budgets.0', ['value' => 100000, 'label' => 'AED 100,000'])
         );

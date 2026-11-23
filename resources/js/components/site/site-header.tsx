@@ -14,7 +14,7 @@ import {
     Store,
     Tag,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ComponentType, ReactNode, SVGProps } from 'react';
 import {
     FacebookIcon,
@@ -142,18 +142,17 @@ function socialLinksFor(site: SiteDetails): {
 }
 
 /**
- * A top-level menu item: a pill the sliding highlight sits behind, with a
- * tangerine dot under the current page.
+ * A top-level menu item: the current page sits in a solid plum pill, and the others
+ * share a soft highlight that slides along behind them on hover.
  */
 function navItemClasses(tone: Tone, isActive: boolean): string {
     return cn(
-        'relative z-10 inline-flex h-11 items-center rounded-full px-3.5 text-[14.5px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-200 xl:px-4 xl:text-[15.5px]',
-        'after:absolute after:bottom-[5px] after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:scale-0 after:rounded-full after:bg-tangerine-400 after:transition-transform after:duration-300 after:content-[""]',
-        tone === 'light'
-            ? 'text-white/85 hover:text-white'
-            : 'text-ink/80 hover:text-plum-800',
-        isActive && 'after:scale-100',
-        isActive && (tone === 'light' ? 'text-white' : 'text-plum-800'),
+        'relative z-10 inline-flex h-11 items-center rounded-full px-3.5 text-[14.5px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-200 xl:px-[18px] xl:text-[15px]',
+        isActive
+            ? 'bg-plum-600 text-white shadow-[0_10px_24px_-12px_rgba(76,45,143,0.9)]'
+            : tone === 'light'
+              ? 'text-white/85 hover:text-white'
+              : 'text-ink/80 hover:text-plum-800',
     );
 }
 
@@ -173,50 +172,81 @@ function HouseIcon({ className }: { className?: string }) {
     );
 }
 
+/**
+ * A round, tangerine-ringed badge holding one of the utility bar's contact icons.
+ */
+function UtilityIcon({
+    icon: Icon,
+}: {
+    icon: ComponentType<SVGProps<SVGSVGElement>>;
+}) {
+    return (
+        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-tangerine-400/12 text-tangerine-400 ring-1 ring-tangerine-400/30 transition-colors duration-300 group-hover:bg-tangerine-500 group-hover:text-plum-950 group-hover:ring-tangerine-500">
+            <Icon aria-hidden="true" className="size-3" />
+        </span>
+    );
+}
+
+/**
+ * The slim glass strip above the menu: where to find us on the left, the cities we
+ * cover and our social profiles on the right.
+ */
 function UtilityBar() {
     const site = useSite();
     const socialLinks = socialLinksFor(site);
 
     return (
-        <div className="hidden h-[38px] border-b border-white/10 bg-plum-950/55 text-[12.5px] text-white/70 backdrop-blur-md lg:block">
+        <div className="relative hidden h-[42px] bg-[linear-gradient(180deg,rgba(20,10,42,0.82)_0%,rgba(27,14,54,0.5)_100%)] text-[12.5px] text-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl lg:block">
+            <span
+                aria-hidden="true"
+                className="absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.14)_18%,rgba(249,173,69,0.55)_50%,rgba(255,255,255,0.14)_82%,transparent_100%)]"
+            />
             <div className="site-container flex h-full items-center justify-between gap-6">
-                <ul className="flex items-center gap-6">
+                <ul className="flex items-center gap-5">
                     <li>
                         <a
                             href={site.address.map_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 transition-colors hover:text-white"
+                            className="group flex items-center gap-2.5 transition-colors duration-300 hover:text-white"
                         >
-                            <MapPin
-                                aria-hidden="true"
-                                className="size-3.5 text-tangerine-400"
-                            />
+                            <UtilityIcon icon={MapPin} />
                             {site.address.line_one}, {site.address.line_two}
                         </a>
                     </li>
+                    <li aria-hidden="true" className="h-3.5 w-px bg-white/15" />
                     <li>
                         <a
                             href={`mailto:${site.email}`}
-                            className="flex items-center gap-2 transition-colors hover:text-white"
+                            className="group flex items-center gap-2.5 transition-colors duration-300 hover:text-white"
                         >
-                            <Mail
-                                aria-hidden="true"
-                                className="size-3.5 text-tangerine-400"
-                            />
+                            <UtilityIcon icon={Mail} />
                             {site.email}
                         </a>
                     </li>
                 </ul>
                 <div className="flex items-center gap-5">
-                    <p className="hidden tracking-[0.1em] uppercase xl:block">
-                        {site.cities.join(' • ')}
-                    </p>
+                    <ul
+                        aria-label="Cities we cover"
+                        className="hidden items-center gap-3 text-[11px] font-medium tracking-[0.18em] text-white/65 uppercase xl:flex"
+                    >
+                        {site.cities.map((city, position) => (
+                            <li key={city} className="flex items-center gap-3">
+                                {position > 0 && (
+                                    <span
+                                        aria-hidden="true"
+                                        className="size-1 rounded-full bg-tangerine-400"
+                                    />
+                                )}
+                                {city}
+                            </li>
+                        ))}
+                    </ul>
                     <span
                         aria-hidden="true"
-                        className="hidden h-4 w-px bg-white/15 xl:block"
+                        className="hidden h-3.5 w-px bg-white/15 xl:block"
                     />
-                    <ul className="flex items-center gap-3.5">
+                    <ul className="flex items-center gap-1.5">
                         {socialLinks.map((social) => (
                             <li key={social.label}>
                                 <a
@@ -224,9 +254,9 @@ function UtilityBar() {
                                     target="_blank"
                                     rel="noreferrer"
                                     aria-label={social.label}
-                                    className="block transition-colors hover:text-tangerine-400"
+                                    className="flex size-7 items-center justify-center rounded-full bg-white/[0.04] text-white/75 ring-1 ring-white/15 transition-colors duration-300 hover:bg-tangerine-500 hover:text-plum-950 hover:ring-tangerine-500"
                                 >
-                                    <social.icon className="size-3.5" />
+                                    <social.icon className="size-3" />
                                 </a>
                             </li>
                         ))}
@@ -250,7 +280,7 @@ function MenuPanel({
     return (
         <NavigationMenuContent
             className={cn(
-                'left-1/2! mt-3! -translate-x-1/2 overflow-visible! rounded-2xl! border-hairline! bg-white! p-2! text-body shadow-[0_30px_70px_-24px_rgba(27,14,54,0.45)]!',
+                'left-1/2! mt-5! -translate-x-1/2 overflow-visible! rounded-2xl! border-hairline! bg-white! p-2! text-body shadow-[0_30px_70px_-24px_rgba(27,14,54,0.45)]!',
                 'before:absolute before:-top-[7px] before:left-1/2 before:size-3.5 before:-translate-x-1/2 before:rotate-45 before:rounded-tl-[3px] before:border-t before:border-l before:border-hairline before:bg-white before:content-[""]',
                 className,
             )}
@@ -292,16 +322,19 @@ function MenuEntryLink({ entry }: { entry: MenuEntry }) {
 function triggerClasses(tone: Tone, isActive: boolean): string {
     return cn(
         navItemClasses(tone, isActive),
-        'h-11! rounded-full! bg-transparent! px-3.5! py-0! hover:bg-transparent! focus:bg-transparent! data-[state=open]:bg-transparent! data-[state=open]:after:scale-100 xl:px-4! [&>svg]:ml-1.5 [&>svg]:size-3.5 [&>svg]:opacity-70',
-        tone === 'light'
-            ? 'focus:text-white data-[state=open]:text-white'
-            : 'focus:text-plum-800 data-[state=open]:text-plum-800',
+        'h-11! rounded-full! px-3.5! py-0! xl:px-[18px]! [&>svg]:ml-1.5 [&>svg]:size-3.5 [&>svg]:opacity-70',
+        isActive
+            ? 'bg-plum-600! text-white! hover:bg-plum-600! focus:bg-plum-600! data-[state=open]:bg-plum-600!'
+            : 'bg-transparent! hover:bg-transparent! focus:bg-transparent! data-[state=open]:bg-transparent!',
+        !isActive &&
+            (tone === 'light'
+                ? 'focus:text-white data-[state=open]:text-white'
+                : 'focus:text-plum-800 data-[state=open]:text-plum-800'),
     );
 }
 
 function DesktopNavigation({ tone }: { tone: Tone }) {
-    const { currentUrl, isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
-    const activeItemRef = useRef<HTMLLIElement | null>(null);
+    const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
     const [highlight, setHighlight] = useState<{
         left: number;
         width: number;
@@ -314,22 +347,18 @@ function DesktopNavigation({ tone }: { tone: Tone }) {
     const isContact = isCurrentUrl(contact());
 
     /**
-     * Slide the highlight behind an item, or hide it when there is nothing to sit behind.
+     * Slide the hover highlight behind an item. The current page has its own pill, so it needs none.
      */
-    const highlightItem = (item: HTMLLIElement | null): void => {
-        setHighlight(
-            item ? { left: item.offsetLeft, width: item.offsetWidth } : null,
-        );
-    };
-
-    useEffect(() => {
-        highlightItem(activeItemRef.current);
-    }, [currentUrl]);
-
     const itemProps = (isActive: boolean) => ({
-        ref: isActive ? activeItemRef : undefined,
-        onMouseEnter: (event: React.MouseEvent<HTMLLIElement>) =>
-            highlightItem(event.currentTarget),
+        onMouseEnter: (event: React.MouseEvent<HTMLLIElement>) => {
+            const item = event.currentTarget;
+
+            setHighlight(
+                isActive
+                    ? null
+                    : { left: item.offsetLeft, width: item.offsetWidth },
+            );
+        },
     });
 
     return (
@@ -341,13 +370,13 @@ function DesktopNavigation({ tone }: { tone: Tone }) {
         >
             <NavigationMenuList
                 className="relative gap-0.5"
-                onMouseLeave={() => highlightItem(activeItemRef.current)}
+                onMouseLeave={() => setHighlight(null)}
             >
                 <li
                     aria-hidden="true"
                     className={cn(
                         'pointer-events-none absolute top-1/2 h-11 -translate-y-1/2 rounded-full transition-[left,width,opacity] duration-300 ease-out',
-                        tone === 'light' ? 'bg-white/12' : 'bg-plum-50',
+                        tone === 'light' ? 'bg-white/10' : 'bg-plum-50',
                         highlight ? 'opacity-100' : 'opacity-0',
                     )}
                     style={{
@@ -653,22 +682,22 @@ export function SiteHeader() {
             <div
                 className={cn(
                     'transition-transform duration-500 ease-out',
-                    isScrolled && 'lg:-translate-y-[38px]',
+                    isScrolled && 'lg:-translate-y-[42px]',
                 )}
             >
                 <UtilityBar />
                 <div
                     className={cn(
-                        'border-b transition-[background-color,border-color,box-shadow] duration-500',
-                        isScrolled
-                            ? 'border-hairline bg-white/95 shadow-[0_18px_50px_-30px_rgba(27,14,54,0.5)] backdrop-blur-xl'
-                            : 'border-white/10 bg-plum-950/25 backdrop-blur-md',
+                        'site-container transition-[padding] duration-500 ease-out',
+                        isScrolled ? 'pt-2.5 lg:pt-3' : 'pt-3 lg:pt-3.5',
                     )}
                 >
                     <div
                         className={cn(
-                            'site-container flex items-center justify-between gap-6 transition-[height] duration-500',
-                            isScrolled ? 'h-[68px]' : 'h-[82px]',
+                            'flex h-16 items-center justify-between gap-4 rounded-full border pr-2 pl-5 transition-[height,background-color,border-color,box-shadow] duration-500 sm:pl-7 lg:pr-2.5 lg:pl-8',
+                            isScrolled
+                                ? 'border-hairline bg-white/95 shadow-[0_22px_50px_-28px_rgba(27,14,54,0.55)] backdrop-blur-xl lg:h-[72px]'
+                                : 'border-white/20 bg-plum-950/30 shadow-[0_24px_60px_-30px_rgba(10,4,24,0.7)] backdrop-blur-md lg:h-[78px]',
                         )}
                     >
                         <Link
@@ -683,23 +712,35 @@ export function SiteHeader() {
 
                         <DesktopNavigation tone={tone} />
 
-                        <div className="flex items-center gap-3 xl:gap-4">
+                        <div className="flex items-center gap-2 xl:gap-3">
                             <Link
                                 href={propertiesIndex()}
                                 aria-label="Search properties"
                                 className={cn(
-                                    'hidden size-11 items-center justify-center rounded-full border transition-colors lg:flex',
+                                    'hidden size-11 shrink-0 items-center justify-center rounded-full border transition-colors xl:flex',
                                     tone === 'light'
-                                        ? 'border-white/25 text-white hover:bg-white/10'
+                                        ? 'border-white/30 text-white hover:bg-white/10'
                                         : 'border-plum-700/20 text-plum-800 hover:bg-plum-50',
                                 )}
                             >
-                                <Search aria-hidden="true" className="size-4" />
+                                <Search
+                                    aria-hidden="true"
+                                    className="size-[18px]"
+                                />
                             </Link>
+                            <span
+                                aria-hidden="true"
+                                className={cn(
+                                    'mx-1.5 hidden h-8 w-px min-[1400px]:block',
+                                    tone === 'light'
+                                        ? 'bg-white/20'
+                                        : 'bg-hairline',
+                                )}
+                            />
                             <a
                                 href={`tel:${site.phone}`}
                                 className={cn(
-                                    'hidden items-center gap-3 xl:flex',
+                                    'mr-2 hidden shrink-0 items-center gap-3 whitespace-nowrap min-[1400px]:flex',
                                     tone === 'light'
                                         ? 'text-white'
                                         : 'text-ink',
@@ -707,31 +748,30 @@ export function SiteHeader() {
                             >
                                 <span
                                     className={cn(
-                                        'flex size-11 items-center justify-center rounded-full border',
+                                        'flex size-11 shrink-0 items-center justify-center rounded-full',
                                         tone === 'light'
-                                            ? 'border-white/25'
-                                            : 'border-plum-700/20',
+                                            ? 'bg-white/10'
+                                            : 'bg-plum-50',
                                     )}
                                 >
                                     <Phone
                                         aria-hidden="true"
-                                        className="size-4 text-tangerine-400"
+                                        className="size-[18px] text-tangerine-500"
                                     />
                                 </span>
                                 <span className="leading-tight">
-                                    <span className="block text-[10.5px] tracking-[0.14em] uppercase opacity-60">
-                                        Call us
+                                    <span className="block text-[12.5px] opacity-75">
+                                        Call Us
                                     </span>
-                                    <span className="text-[14.5px] font-semibold">
+                                    <span className="text-[14.5px] font-semibold tracking-[0.01em]">
                                         {site.phone_display}
                                     </span>
                                 </span>
                             </a>
                             <Link
                                 href={contact()}
-                                className="group hidden h-11 items-center gap-2 rounded-full bg-tangerine-500 pr-5 pl-6 text-[14px] font-semibold whitespace-nowrap text-plum-950 transition-colors duration-200 hover:bg-tangerine-400 sm:inline-flex"
+                                className="group hidden h-12 shrink-0 items-center gap-2.5 rounded-full bg-tangerine-500 px-6 text-[14.5px] font-semibold whitespace-nowrap text-plum-950 shadow-[0_14px_30px_-14px_rgba(246,152,28,0.9)] transition-colors duration-200 hover:bg-tangerine-400 sm:inline-flex lg:h-[56px] xl:px-7"
                             >
-                                <HouseIcon className="size-4" />
                                 Get in Touch
                                 <ArrowRight
                                     aria-hidden="true"

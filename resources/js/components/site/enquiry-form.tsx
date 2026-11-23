@@ -8,6 +8,7 @@ import {
     TextField,
 } from '@/components/site/form-controls';
 import { useSite } from '@/hooks/use-site';
+import type { EnquiryDefaults } from '@/lib/management-enquiry';
 import { terms } from '@/routes';
 import { store } from '@/routes/enquiries';
 import type { Property } from '@/types/site';
@@ -52,13 +53,16 @@ function FormGroupLabel({ children }: { children: string }) {
 
 /**
  * The full enquiry form, used for general contact and for valuation requests.
+ * `defaults` fills fields in ahead of time, such as for a management request.
  */
 export function EnquiryForm({
     source,
     submitLabel = 'Submit',
+    defaults = {},
 }: {
     source: 'contact' | 'valuation';
     submitLabel?: string;
+    defaults?: EnquiryDefaults;
 }) {
     const site = useSite();
 
@@ -85,7 +89,7 @@ export function EnquiryForm({
                     <SelectField
                         label="I'm a"
                         name="role"
-                        defaultValue=""
+                        defaultValue={defaults.role ?? ''}
                         error={errors.role}
                     >
                         <option value="">Select</option>
@@ -116,7 +120,7 @@ export function EnquiryForm({
                     <SelectField
                         label="Type"
                         name="property_type"
-                        defaultValue=""
+                        defaultValue={defaults.property_type ?? ''}
                         error={errors.property_type}
                     >
                         <option value="">Select</option>
@@ -139,7 +143,7 @@ export function EnquiryForm({
                     <SelectField
                         label="City"
                         name="city"
-                        defaultValue=""
+                        defaultValue={defaults.city ?? ''}
                         error={errors.city}
                     >
                         <option value="">Select</option>
@@ -181,6 +185,7 @@ export function EnquiryForm({
                         label="Message"
                         name="message"
                         className="sm:col-span-2"
+                        defaultValue={defaults.message}
                         error={errors.message}
                     />
 

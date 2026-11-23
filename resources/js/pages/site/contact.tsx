@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { ChevronDown, Mail, MapPin, Phone } from 'lucide-react';
 import type { ComponentType, ReactNode, SVGProps } from 'react';
 import { WhatsAppIcon } from '@/components/site/brand-icons';
@@ -10,6 +11,10 @@ import {
 } from '@/components/site/section-heading';
 import { SeoHead } from '@/components/site/seo-head';
 import { useSite, whatsAppUrl } from '@/hooks/use-site';
+import {
+    ENQUIRY_SECTION_ID,
+    managementEnquiryDefaults,
+} from '@/lib/management-enquiry';
 
 const OFFICE_MAP_EMBED_URL =
     'https://maps.google.com/maps?q=Business%20Bay%2C%20Dubai&t=m&z=13&output=embed&iwloc=near';
@@ -75,6 +80,7 @@ function ContactDetail({
 
 export default function Contact() {
     const site = useSite();
+    const { url } = usePage();
 
     return (
         <>
@@ -94,7 +100,10 @@ export default function Contact() {
 
             <section className="site-container pt-12 pb-16 lg:pt-16 lg:pb-24">
                 <div className="grid items-start gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
-                    <div>
+                    <div
+                        id={ENQUIRY_SECTION_ID}
+                        className="scroll-mt-24 lg:scroll-mt-32"
+                    >
                         <DisplayHeading>
                             Get in Touch <Highlight>with Us</Highlight>
                         </DisplayHeading>
@@ -104,7 +113,10 @@ export default function Contact() {
                             Let’s connect and make your experience smooth and
                             successful.
                         </p>
-                        <EnquiryForm source="contact" />
+                        <EnquiryForm
+                            source="contact"
+                            defaults={managementEnquiryDefaults(url, site)}
+                        />
                     </div>
                     <aside className="rounded-[14px] bg-plum-700 p-7 sm:p-8 lg:sticky lg:top-24">
                         <h2 className="font-display text-2xl font-medium text-white">
@@ -131,7 +143,7 @@ export default function Contact() {
                                 label="WhatsApp"
                                 external
                             >
-                                {site.phone_display}
+                                {site.whatsapp_display}
                             </ContactDetail>
                             <ContactDetail
                                 href={`mailto:${site.email}`}

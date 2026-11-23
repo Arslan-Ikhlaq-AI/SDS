@@ -1,22 +1,34 @@
 import { Link } from '@inertiajs/react';
-import { Handshake, ShieldCheck, UsersRound } from 'lucide-react';
+import {
+    ArrowUpRight,
+    Building2,
+    Handshake,
+    HardHat,
+    MapPin,
+    Phone,
+    ShieldCheck,
+    UsersRound,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { CtaBand } from '@/components/site/cta-band';
 import { HomeHero } from '@/components/site/home-hero';
-import { ImageFrame } from '@/components/site/image-frame';
 import { OfferColumns } from '@/components/site/offer-columns';
+import { LogoMark } from '@/components/site/logo';
 import { PillLink } from '@/components/site/pill-link';
-import { PropertyCard, ValuationCard } from '@/components/site/property-card';
 import {
     DisplayHeading,
     Eyebrow,
     Highlight,
-    SectionHeading,
 } from '@/components/site/section-heading';
 import { SeoHead } from '@/components/site/seo-head';
 import { useSite } from '@/hooks/use-site';
+import { cn } from '@/lib/utils';
 import { about, services } from '@/routes';
-import { index as propertiesIndex } from '@/routes/properties';
-import type { Property, SelectOption } from '@/types/site';
+import {
+    index as propertiesIndex,
+    show as showProperty,
+} from '@/routes/properties';
+import type { SelectOption } from '@/types/site';
 
 const channelPartners = [
     { name: 'Sobha Realty', logo: 'sobha' },
@@ -31,36 +43,90 @@ const channelPartners = [
     { name: 'Pre Real Estate Agency', logo: 'pre-realestate' },
 ];
 
+/** Headline figures; each value is shown with a trailing “+”. */
 const stats = [
-    { value: '80+', label: 'Team Members' },
-    { value: '5k+', label: 'Happy Clients' },
-    { value: '80+', label: 'Properties' },
+    { value: '80', label: 'Team Members' },
+    { value: '5k', label: 'Happy Clients' },
+    { value: '80', label: 'Properties' },
 ];
 
-const specialisms = [
+type FeaturedBuilding = {
+    title: string;
+    location: string;
+    badge: string;
+    image: string;
+    imagePosition: string;
+    facts: string[];
+    href: string;
+};
+
+type FeaturedBuildingGroup = {
+    title: string;
+    description: string;
+    icon: LucideIcon;
+    browseHref: string;
+    buildings: FeaturedBuilding[];
+};
+
+/**
+ * Two residential and two worker accommodation buildings; the first of each pair is a live listing from PropertySeeder.
+ */
+const featuredBuildingGroups: FeaturedBuildingGroup[] = [
     {
-        title: 'Off-Plan Properties in Dubai',
-        description: 'Lower prices and flexible payment plans.',
-        image: '/images/services/off-plan.webp',
-        hash: 'off-plan',
+        title: 'Residential Buildings',
+        description:
+            'Apartment buildings for families and professionals, from off-plan launches to ready homes.',
+        icon: Building2,
+        browseHref: propertiesIndex.url({ query: { type: 'residential' } }),
+        buildings: [
+            {
+                title: 'Marquis Insignia',
+                location: 'Arjan, Dubai',
+                badge: 'Off Plan · For Sale',
+                image: '/images/properties/marquis-insignia/exterior-pool.webp',
+                imagePosition: 'object-[42%_50%]',
+                facts: ['B+G+9+R', '1–3 Bedrooms', 'Rooftop Pool'],
+                href: showProperty.url(
+                    'marquis-insignia-1-bedroom-luxurious-apartment',
+                ),
+            },
+            {
+                title: 'Ready Apartment Towers',
+                location: 'Across Dubai',
+                badge: 'Primary & Secondary',
+                image: '/images/services/dubai-night-view.webp',
+                imagePosition: 'object-[50%_50%]',
+                facts: ['Apartments', 'Studios', 'Villas'],
+                href: propertiesIndex.url({ query: { type: 'residential' } }),
+            },
+        ],
     },
     {
-        title: 'Primary and Secondary Properties',
-        description: 'Brand-new homes and high-value resale properties.',
-        image: '/images/services/primary-secondary.webp',
-        hash: 'primary-secondary',
-    },
-    {
-        title: 'Best Labor Accommodations',
-        description: 'Labor camps and staff accommodation for rent.',
-        image: '/images/services/labor-camps.webp',
-        hash: 'labor-accommodation',
-    },
-    {
-        title: 'Residential and Commercial',
-        description: 'Apartments, shops, offices and warehouses.',
-        image: '/images/services/dubai-skyline.webp',
-        hash: 'residential-commercial',
+        title: 'Worker Accommodation',
+        description:
+            'Labor camps and staff accommodation for rent, at prices that fit your budget.',
+        icon: HardHat,
+        browseHref: propertiesIndex.url({ query: { type: 'Labor Camp' } }),
+        buildings: [
+            {
+                title: 'Bin Sanad Camp',
+                location: 'Al Quoz, Dubai',
+                badge: 'Labor Camp',
+                image: '/images/properties/bin-sanad-camp/street-view.webp',
+                imagePosition: 'object-[22%_50%]',
+                facts: ['Shared Kitchens', 'Laundry', 'Courtyard'],
+                href: showProperty.url('bin-sanad-camp-al-quoz'),
+            },
+            {
+                title: 'Staff Accommodation',
+                location: 'Across Dubai',
+                badge: 'For Rent',
+                image: '/images/services/labor-camps.webp',
+                imagePosition: 'object-[58%_50%]',
+                facts: ['Labor Camps', 'Staff Housing', 'Affordable Rents'],
+                href: `${services.url()}#labor-accommodation`,
+            },
+        ],
     },
 ];
 
@@ -70,26 +136,37 @@ function WhatWeOffer() {
     return (
         <section
             id="what-we-offer"
-            className="site-container scroll-mt-20 pt-8 pb-11 lg:pt-1 lg:pb-11"
+            className="relative scroll-mt-20 bg-[radial-gradient(ellipse_75%_55%_at_50%_100%,var(--color-plum-50)_0%,transparent_72%)] pt-16 pb-16 sm:pt-20 lg:pt-24 lg:pb-20"
         >
-            <SectionHeading
-                eyebrow="Our Services"
-                title="What We Offer?"
-                intro={
-                    <>
-                        Your property journey starts here. {site.name}, The Best
-                        real estate company in Dubai, makes buying, selling, and
-                        renting effortless. Labor accommodations, residential
-                        and commercial properties, offices, shops, and
-                        warehouses, whatever you need, the best options are
-                        here. Off-plan, primary, or secondary properties, every
-                        deal is backed by expert guidance for a smooth and
+            <div className="site-container">
+                <div className="mx-auto max-w-[54rem] text-center">
+                    <Eyebrow
+                        centered
+                        className="text-[13px] font-bold tracking-[0.24em]"
+                    >
+                        Our Services
+                    </Eyebrow>
+                    <DisplayHeading className="mt-4 text-[clamp(2.125rem,3.8vw,3.375rem)] leading-[1.08] text-plum-900">
+                        What We <Highlight>Offer</Highlight>?
+                    </DisplayHeading>
+                    <p className="mx-auto mt-5 max-w-[50rem] text-[15.5px] leading-[1.8] text-pretty text-body sm:text-[17px]">
+                        <span className="font-semibold text-plum-800">
+                            Your property journey starts here.
+                        </span>{' '}
+                        Property management is at the heart of {site.name}. We
+                        take on properties, manage them end to end and lease
+                        them to reliable tenants, so owners enjoy steady returns
+                        without the day-to-day work. Alongside management, we
+                        make buying, selling and renting effortless, from labor
+                        accommodation and residential apartments to offices,
+                        shops and warehouses. Off-plan, primary or secondary,
+                        every deal is backed by expert guidance for a smooth and
                         rewarding experience.
-                    </>
-                }
-            />
-            <div className="mt-6">
-                <OfferColumns />
+                    </p>
+                </div>
+                <div className="mt-12 lg:mt-14">
+                    <OfferColumns />
+                </div>
             </div>
         </section>
     );
@@ -97,64 +174,155 @@ function WhatWeOffer() {
 
 function AboutSummary() {
     const site = useSite();
+    const happyClients = stats[1];
 
     const qualities = [
-        { label: 'Trustworthy', icon: ShieldCheck },
-        { label: 'Experienced', icon: UsersRound },
-        { label: 'Committed', icon: Handshake },
+        {
+            title: 'Trustworthy',
+            description: 'Honest advice and clear reporting on every property.',
+            icon: ShieldCheck,
+        },
+        {
+            title: 'Experienced',
+            description: 'A seasoned team that knows Dubai’s market by heart.',
+            icon: UsersRound,
+        },
+        {
+            title: 'Committed',
+            description:
+                'Caring for your property long after the keys change hands.',
+            icon: Handshake,
+        },
     ];
 
     return (
-        <section className="site-container pb-12 lg:pb-10">
-            <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,390fr)_minmax(0,350fr)_minmax(132px,150fr)] lg:gap-x-7">
-                <ImageFrame
-                    src="/images/services/dubai-skyline.webp"
-                    alt="Downtown Dubai skyline at dusk"
-                    className="ml-3 sm:ml-3.5 lg:ml-[11px]"
-                    imageClassName="aspect-[16/10] object-[50%_75%] lg:aspect-[3/2] xl:aspect-[16/9]"
-                />
-                <div>
-                    <Eyebrow>About {site.name}</Eyebrow>
-                    <DisplayHeading className="mt-2.5 lg:text-[clamp(1.5rem,2.55vw,2.5rem)]">
-                        Dubai’s Leading Real Estate{' '}
-                        <span className="block">
-                            <Highlight>Brokerage Company</Highlight>
+        <section
+            id="about-sds"
+            className="relative scroll-mt-20 overflow-hidden pt-20 pb-20 sm:pt-24 lg:pt-32 lg:pb-28"
+        >
+            <span
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 mx-auto h-px max-w-[min(72rem,calc(100%-2rem))] bg-[linear-gradient(90deg,transparent,var(--color-hairline)_20%,var(--color-hairline)_80%,transparent)]"
+            />
+            <div className="site-container grid items-center gap-16 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-x-16 xl:gap-x-24">
+                <div className="relative mx-auto w-full max-w-[34rem] pt-5 pr-8 pb-14 pl-5 sm:pr-14 lg:mx-0 lg:max-w-none">
+                    <span
+                        aria-hidden="true"
+                        className="absolute top-0 left-0 h-[78%] w-[72%] rounded-[34px] border-[1.5px] border-tangerine-500/70"
+                    />
+                    <span
+                        aria-hidden="true"
+                        className="absolute -right-10 -bottom-6 size-64 rounded-full bg-plum-50"
+                    />
+                    <img
+                        src="/images/services/dubai-skyline.webp"
+                        alt="Downtown Dubai skyline at dusk"
+                        loading="lazy"
+                        className="relative aspect-[4/5] w-full rounded-[28px] object-cover object-[62%_50%] shadow-[0_40px_80px_-44px_rgba(27,14,54,0.7)]"
+                    />
+                    <img
+                        src="/images/services/villa.webp"
+                        alt="Contemporary villa in Dubai"
+                        loading="lazy"
+                        className="absolute right-0 bottom-0 aspect-[4/5] w-[44%] rounded-[22px] object-cover shadow-[0_30px_60px_-30px_rgba(27,14,54,0.75)] ring-[7px] ring-white"
+                    />
+                    <div className="absolute top-12 -left-1 flex items-center gap-3.5 rounded-[20px] border border-white/70 bg-white/90 py-3.5 pr-6 pl-4 shadow-[0_24px_50px_-28px_rgba(46,23,96,0.6)] backdrop-blur-md sm:top-16 sm:-left-4">
+                        <span className="font-display text-[34px] leading-none font-medium text-tangerine-500 lining-nums">
+                            {happyClients.value}+
                         </span>
-                    </DisplayHeading>
-                    <p className="mt-3.5 text-[13.5px] leading-[1.7] text-body xl:text-[15px]">
-                        {site.name} makes real estate simple. If you are in need
-                        of labor accommodation in Dubai or Commercial,
-                        Residential Apartments, Shops or Warehouses for rent? We
-                        offer comfortable and well-located options to suit your
-                        needs and budget too. We also offer services to those
-                        who are looking to buy and sell property in Dubai? We
-                        ensure smooth transactions with the best deals possible.
-                        With {site.name} on your side, finding the right
-                        property is easier than ever.
-                    </p>
-                    <PillLink
-                        href={about()}
-                        variant="plum"
-                        className="mt-4 h-[34px] px-5 text-xs"
-                    >
-                        Learn More
-                    </PillLink>
+                        <span className="text-[11.5px] leading-snug font-semibold tracking-[0.14em] text-plum-800 uppercase">
+                            {happyClients.label}
+                            <span className="block font-normal tracking-normal text-soft normal-case">
+                                across the UAE
+                            </span>
+                        </span>
+                    </div>
                 </div>
-                <ul className="flex flex-wrap gap-x-8 gap-y-5 lg:flex-col lg:gap-y-8 lg:border-l lg:border-hairline lg:py-3 lg:pl-6">
-                    {qualities.map((quality) => (
-                        <li
-                            key={quality.label}
-                            className="flex items-center gap-3.5 text-[13px] font-semibold text-plum-800"
+
+                <div>
+                    <Eyebrow className="text-[13px] font-bold tracking-[0.24em]">
+                        About {site.name}
+                    </Eyebrow>
+                    <DisplayHeading className="mt-4 text-[clamp(2rem,3.4vw,3.125rem)] leading-[1.1] text-plum-900">
+                        Dubai’s Leading{' '}
+                        <Highlight>Real Estate Company</Highlight>
+                    </DisplayHeading>
+                    <p className="mt-6 border-l-2 border-tangerine-500 pl-5 font-display text-[clamp(1.3rem,1.9vw,1.625rem)] leading-[1.4] text-pretty text-plum-900 italic">
+                        You own the property.{' '}
+                        <span className="text-tangerine-500">
+                            We make it perform.
+                        </span>
+                    </p>
+                    <p className="mt-6 text-[16px] leading-[1.8] text-pretty text-body sm:text-[17px]">
+                        <span className="font-semibold text-plum-800">
+                            {site.name} manages property on behalf of landlords
+                            across Dubai.
+                        </span>{' '}
+                        We find reliable tenants, collect rent on time, look
+                        after maintenance and keep every contract and renewal in
+                        order. From labor accommodation and residential
+                        apartments to offices, shops and warehouses, we treat
+                        your asset as if it were our own, so it earns steadily
+                        while you stay free of the day-to-day.
+                    </p>
+                    <p className="mt-4 text-[15px] leading-[1.8] text-pretty text-soft sm:text-[15.5px]">
+                        Looking to buy, sell or rent in Dubai? We guide every
+                        step with the same care, securing the best possible deal
+                        and a smooth, transparent transaction.
+                    </p>
+
+                    <ul className="mt-9 grid gap-3.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-1 lg:gap-3 xl:grid-cols-3 xl:gap-4">
+                        {qualities.map((quality) => (
+                            <li
+                                key={quality.title}
+                                className="group flex items-center gap-4 rounded-[22px] border border-hairline bg-white px-5 py-4 shadow-[0_20px_44px_-36px_rgba(46,23,96,0.55)] transition-[translate,border-color] duration-500 ease-out hover:-translate-y-1 hover:border-plum-100 sm:block sm:p-5 lg:flex lg:px-5 lg:py-4 xl:block xl:p-5"
+                            >
+                                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(145deg,var(--color-plum-600),var(--color-plum-900))] shadow-[0_10px_20px_-10px_rgba(46,23,96,0.85)] ring-[5px] ring-plum-50 transition-shadow duration-500 group-hover:ring-tangerine-500/15">
+                                    <quality.icon
+                                        aria-hidden="true"
+                                        strokeWidth={1.6}
+                                        className="size-5 text-white"
+                                    />
+                                </span>
+                                <div className="sm:mt-4 lg:mt-0 xl:mt-4">
+                                    <h3 className="font-display text-[19px] leading-tight font-medium text-plum-900">
+                                        {quality.title}
+                                    </h3>
+                                    <p className="mt-1 text-[13.5px] leading-[1.6] text-soft sm:mt-1.5 lg:mt-1 xl:mt-1.5">
+                                        {quality.description}
+                                    </p>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
+                        <PillLink
+                            href={about()}
+                            variant="plum"
+                            className="h-12 px-7 xl:h-12 xl:px-7"
                         >
-                            <quality.icon
-                                aria-hidden="true"
-                                strokeWidth={1.5}
-                                className="size-[26px] shrink-0 text-tangerine-500"
-                            />
-                            {quality.label}
-                        </li>
-                    ))}
-                </ul>
+                            Discover Our Story
+                        </PillLink>
+                        <a
+                            href={`tel:${site.phone}`}
+                            className="group flex items-center gap-3"
+                        >
+                            <span className="flex size-12 items-center justify-center rounded-full border border-plum-100 text-tangerine-500 transition-colors duration-300 group-hover:border-tangerine-500 group-hover:bg-tangerine-500 group-hover:text-plum-950">
+                                <Phone
+                                    aria-hidden="true"
+                                    className="size-[18px]"
+                                />
+                            </span>
+                            <span className="text-[12px] leading-tight text-soft">
+                                Speak to an advisor
+                                <span className="mt-1 block text-[15px] font-semibold text-plum-900">
+                                    {site.phone_display}
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </section>
     );
@@ -185,164 +353,345 @@ function WhoWeAre() {
     ];
 
     return (
-        <section className="bg-plum-50">
-            <div className="site-container py-11 lg:py-12">
-                <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.15fr]">
+        <section
+            id="who-we-are"
+            className="relative isolate scroll-mt-20 overflow-hidden bg-plum-950 py-20 text-white sm:py-24 lg:py-28"
+        >
+            <img
+                src="/images/services/dubai-panorama.webp"
+                alt=""
+                loading="lazy"
+                className="absolute inset-0 -z-20 size-full object-cover opacity-[0.14] mix-blend-luminosity"
+            />
+            <span
+                aria-hidden="true"
+                className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_55%_50%_at_88%_0%,rgba(246,152,28,0.16),transparent_70%),radial-gradient(ellipse_65%_60%_at_0%_100%,rgba(76,45,143,0.6),transparent_72%),linear-gradient(180deg,rgba(27,14,54,0.6),rgba(27,14,54,0.94))]"
+            />
+
+            <div className="site-container">
+                <div className="grid items-end gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16 xl:gap-24">
                     <div>
-                        <DisplayHeading>Who We Are?</DisplayHeading>
-                        <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-body">
+                        <Eyebrow
+                            tone="light"
+                            className="text-[13px] font-bold tracking-[0.24em]"
+                        >
+                            {site.name}
+                        </Eyebrow>
+                        <DisplayHeading className="mt-4 text-[clamp(2.125rem,3.8vw,3.375rem)] leading-[1.08] text-white">
+                            Who We <Highlight>Are</Highlight>?
+                        </DisplayHeading>
+                        <p className="mt-6 max-w-xl text-[16px] leading-[1.8] text-pretty text-white/75 sm:text-[17px]">
                             {site.name} is a trusted real estate company in
                             Dubai, connecting buyers, sellers, and investors
                             with top properties.
                         </p>
                     </div>
-                    <dl className="grid grid-cols-3 divide-x divide-plum-900/10">
+
+                    <dl className="grid grid-cols-3 divide-x divide-white/10 rounded-[28px] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] py-8 shadow-[0_40px_80px_-50px_rgba(0,0,0,0.8)] backdrop-blur-md sm:py-10">
                         {stats.map((stat) => (
                             <div
                                 key={stat.label}
-                                className="flex flex-col-reverse px-3 text-center sm:px-6"
+                                className="flex flex-col-reverse items-center justify-end gap-3 px-2 text-center"
                             >
-                                <dt className="text-xs text-soft sm:text-sm">
+                                <dt className="text-[10.5px] font-semibold tracking-[0.16em] text-white/60 uppercase sm:text-[12px] sm:tracking-[0.2em]">
                                     {stat.label}
                                 </dt>
-                                <dd className="font-display text-[clamp(1.75rem,3.2vw,2.625rem)] leading-tight font-medium text-plum-700 lining-nums">
+                                <dd className="font-display text-[clamp(2.25rem,4.6vw,4rem)] leading-none font-medium text-white lining-nums">
                                     {stat.value}
+                                    <span className="text-tangerine-500">
+                                        +
+                                    </span>
                                 </dd>
                             </div>
                         ))}
                     </dl>
                 </div>
 
-                <div className="mt-9 border-t border-plum-900/10 pt-9">
-                    <h3 className="font-display text-[clamp(1.25rem,2vw,1.625rem)] leading-snug font-medium text-ink">
+                <div
+                    aria-hidden="true"
+                    className="mt-20 flex items-center gap-5 lg:mt-24"
+                >
+                    <span className="h-px flex-1 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2))]" />
+                    <LogoMark
+                        variant="light"
+                        className="h-4 w-auto opacity-60"
+                    />
+                    <span className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.2),transparent)]" />
+                </div>
+
+                <div className="mt-14 flex flex-col gap-5 lg:mt-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+                    <h3 className="max-w-[50rem] font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-[1.15] font-medium tracking-[-0.01em] text-white">
                         Why {site.name} is{' '}
                         <Highlight>The Perfect Choice?</Highlight>
                     </h3>
-                    <ul className="mt-6 grid gap-7 md:grid-cols-3 md:gap-9">
-                        {reasons.map((reason) => (
-                            <li key={reason.title} className="flex gap-3.5">
+                    <p className="max-w-md text-[15px] leading-[1.8] text-white/65">
+                        Three values guide every property we manage and every
+                        deal we close.
+                    </p>
+                </div>
+
+                <ol className="mt-10 grid gap-5 md:grid-cols-3 lg:mt-12 lg:gap-6">
+                    {reasons.map((reason, index) => (
+                        <li
+                            key={reason.title}
+                            className="group relative flex flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.07),rgba(255,255,255,0.015))] p-8 backdrop-blur-md transition-[translate,border-color] duration-500 ease-out hover:-translate-y-1.5 hover:border-tangerine-500/40 xl:p-10"
+                        >
+                            <span
+                                aria-hidden="true"
+                                className="absolute inset-x-8 top-0 h-[2px] origin-left scale-x-0 rounded-b-full bg-[linear-gradient(90deg,var(--color-tangerine-500),var(--color-tangerine-400))] transition-transform duration-500 ease-out group-hover:scale-x-100"
+                            />
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute top-5 right-7 font-display text-[88px] leading-none font-medium text-white/[0.06] italic lining-nums transition-colors duration-500 group-hover:text-tangerine-500/20"
+                            >
+                                0{index + 1}
+                            </span>
+                            <span className="flex size-14 items-center justify-center rounded-full bg-[linear-gradient(145deg,var(--color-tangerine-400),var(--color-tangerine-600))] text-plum-950 shadow-[0_16px_32px_-14px_rgba(246,152,28,0.8)] ring-[6px] ring-white/[0.06] transition-shadow duration-500 group-hover:ring-tangerine-500/15">
                                 <reason.icon
                                     aria-hidden="true"
-                                    strokeWidth={1.5}
-                                    className="mt-0.5 size-7 shrink-0 text-tangerine-500"
+                                    strokeWidth={1.6}
+                                    className="size-6"
                                 />
-                                <div>
-                                    <h4 className="text-[15px] font-semibold text-plum-900">
-                                        {reason.title}
-                                    </h4>
-                                    <p className="mt-1 text-sm leading-relaxed text-soft">
-                                        {reason.description}
-                                    </p>
+                            </span>
+                            <h4 className="mt-9 font-display text-[25px] leading-tight font-medium text-white">
+                                {reason.title}
+                            </h4>
+                            <span
+                                aria-hidden="true"
+                                className="mt-4 h-px w-10 bg-tangerine-500/80 transition-[width] duration-500 ease-out group-hover:w-20"
+                            />
+                            <p className="mt-5 text-[14.5px] leading-[1.8] text-white/70">
+                                {reason.description}
+                            </p>
+                        </li>
+                    ))}
+                </ol>
+            </div>
+        </section>
+    );
+}
+
+function FeaturedBuildingCard({ building }: { building: FeaturedBuilding }) {
+    return (
+        <Link
+            href={building.href}
+            className="group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[26px] bg-plum-950 p-6 shadow-[0_30px_60px_-38px_rgba(27,14,54,0.75)] ring-1 ring-plum-950/5 sm:aspect-[3/4] xl:aspect-[4/5] xl:p-7"
+        >
+            <img
+                src={building.image}
+                alt=""
+                loading="lazy"
+                className={cn(
+                    'absolute inset-0 -z-20 size-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06] motion-reduce:transition-none',
+                    building.imagePosition,
+                )}
+            />
+            <span
+                aria-hidden="true"
+                className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(27,14,54,0.45)_0%,rgba(27,14,54,0)_24%,rgba(27,14,54,0.15)_38%,rgba(27,14,54,0.78)_62%,rgba(27,14,54,0.97)_100%)]"
+            />
+            <span
+                aria-hidden="true"
+                className="absolute inset-x-7 top-0 h-[2px] origin-left scale-x-0 rounded-b-full bg-[linear-gradient(90deg,var(--color-tangerine-500),var(--color-tangerine-400))] transition-transform duration-500 ease-out group-hover:scale-x-100"
+            />
+
+            <div className="absolute inset-x-5 top-5 flex items-start justify-between gap-3 xl:inset-x-6 xl:top-6">
+                <span className="rounded-full border border-white/20 bg-plum-950/40 px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-white uppercase backdrop-blur-md">
+                    {building.badge}
+                </span>
+                <span
+                    aria-hidden="true"
+                    className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-plum-950/40 text-white backdrop-blur-md transition-colors duration-300 group-hover:border-tangerine-500 group-hover:bg-tangerine-500 group-hover:text-plum-950"
+                >
+                    <ArrowUpRight className="size-[18px] transition-transform duration-300 group-hover:rotate-45" />
+                </span>
+            </div>
+
+            <p className="flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.14em] text-white/80 uppercase">
+                <MapPin
+                    aria-hidden="true"
+                    className="size-3.5 text-tangerine-400"
+                />
+                {building.location}
+            </p>
+            <h4 className="mt-2.5 font-display text-[clamp(1.375rem,1.9vw,1.75rem)] leading-[1.15] font-medium text-white">
+                {building.title}
+            </h4>
+            <span
+                aria-hidden="true"
+                className="mt-4 h-px w-10 bg-tangerine-500/80 transition-[width] duration-500 ease-out group-hover:w-20"
+            />
+            <ul className="mt-4 flex flex-wrap gap-2">
+                {building.facts.map((fact) => (
+                    <li
+                        key={fact}
+                        className="rounded-full bg-white/10 px-3 py-1 text-[12px] font-medium text-white/85 ring-1 ring-white/15 backdrop-blur-sm"
+                    >
+                        {fact}
+                    </li>
+                ))}
+            </ul>
+        </Link>
+    );
+}
+
+function FeaturedBuildings() {
+    return (
+        <section
+            id="featured-buildings"
+            className="relative scroll-mt-20 overflow-hidden bg-[radial-gradient(ellipse_70%_45%_at_50%_0%,var(--color-plum-50)_0%,transparent_70%)] pt-20 pb-20 sm:pt-24 lg:pt-28 lg:pb-24"
+        >
+            <div className="site-container">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+                    <div className="max-w-[40rem]">
+                        <Eyebrow className="text-[13px] font-bold tracking-[0.24em]">
+                            Featured Buildings
+                        </Eyebrow>
+                        <DisplayHeading className="mt-4 text-[clamp(2.125rem,3.8vw,3.375rem)] leading-[1.08] text-plum-900">
+                            Your property journey{' '}
+                            <Highlight>starts here.</Highlight>
+                        </DisplayHeading>
+                    </div>
+                    <div className="flex max-w-md flex-col items-start gap-6">
+                        <p className="text-[15px] leading-[1.8] text-soft sm:text-[16px]">
+                            From modern apartment buildings to well-kept worker
+                            accommodation, explore a few of the buildings we
+                            sell, lease and manage across Dubai.
+                        </p>
+                        <PillLink
+                            href={propertiesIndex()}
+                            variant="plum"
+                            className="h-12 px-7 xl:h-12 xl:px-7"
+                        >
+                            Browse All Properties
+                        </PillLink>
+                    </div>
+                </div>
+
+                <div className="mt-14 grid gap-14 lg:mt-16 lg:grid-cols-2 lg:gap-8 xl:gap-10">
+                    {featuredBuildingGroups.map((group, index) => (
+                        <div key={group.title}>
+                            <div className="flex items-center justify-between gap-5 border-b border-hairline pb-5">
+                                <div className="flex items-center gap-4">
+                                    <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(145deg,var(--color-plum-600),var(--color-plum-900))] shadow-[0_10px_20px_-10px_rgba(46,23,96,0.85)] ring-[5px] ring-plum-50">
+                                        <group.icon
+                                            aria-hidden="true"
+                                            strokeWidth={1.6}
+                                            className="size-5 text-white"
+                                        />
+                                    </span>
+                                    <div>
+                                        <p className="text-[11.5px] font-bold tracking-[0.2em] text-tangerine-600 uppercase lining-nums">
+                                            0{index + 1}
+                                            <span className="mx-2 text-plum-100">
+                                                /
+                                            </span>
+                                            {group.buildings.length} Buildings
+                                        </p>
+                                        <h3 className="mt-1 font-display text-[clamp(1.375rem,1.8vw,1.625rem)] leading-tight font-medium text-plum-900">
+                                            {group.title}
+                                        </h3>
+                                    </div>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
+                                <Link
+                                    href={group.browseHref}
+                                    className="group/browse hidden shrink-0 items-center gap-1.5 text-[13px] font-semibold text-plum-700 transition-colors hover:text-tangerine-600 sm:flex"
+                                >
+                                    View all
+                                    <ArrowUpRight
+                                        aria-hidden="true"
+                                        className="size-4 transition-transform duration-300 group-hover/browse:translate-x-0.5 group-hover/browse:-translate-y-0.5"
+                                    />
+                                </Link>
+                            </div>
+                            <p className="mt-4 max-w-lg text-[14.5px] leading-[1.75] text-soft">
+                                {group.description}
+                            </p>
+                            <ul className="mt-7 grid gap-4 sm:grid-cols-2 sm:gap-5">
+                                {group.buildings.map((building) => (
+                                    <li key={building.title}>
+                                        <FeaturedBuildingCard
+                                            building={building}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                href={group.browseHref}
+                                className="mt-6 inline-flex items-center gap-1.5 text-[13px] font-semibold text-plum-700 sm:hidden"
+                            >
+                                View all {group.title.toLowerCase()}
+                                <ArrowUpRight
+                                    aria-hidden="true"
+                                    className="size-4"
+                                />
+                            </Link>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>
     );
 }
 
-function FeaturedProperties({ properties }: { properties: Property[] }) {
-    return (
-        <section className="site-container pb-12">
-            <div className="relative">
-                <SectionHeading
-                    eyebrow="Featured Properties"
-                    title="Find Your Perfect Property"
-                />
-                <Link
-                    href={propertiesIndex()}
-                    className="group mt-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-plum-700 lg:absolute lg:right-0 lg:bottom-2 lg:mt-0"
-                >
-                    View All Properties
-                    <span
-                        aria-hidden="true"
-                        className="transition-transform group-hover:translate-x-0.5"
-                    >
-                        →
-                    </span>
-                </Link>
-            </div>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {properties.map((property) => (
-                    <PropertyCard key={property.id} property={property} />
-                ))}
-                {properties.length < 3 && <ValuationCard />}
-            </div>
-        </section>
-    );
-}
-
-function Specialisms() {
-    return (
-        <section className="site-container pt-12 pb-14 lg:pb-16">
-            <DisplayHeading className="text-center">
-                Your property journey starts here.
-            </DisplayHeading>
-            <ul className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {specialisms.map((specialism) => (
-                    <li key={specialism.hash}>
-                        <Link
-                            href={`${services.url()}#${specialism.hash}`}
-                            className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[14px] p-5 sm:aspect-[3/4]"
-                        >
-                            <img
-                                src={specialism.image}
-                                alt=""
-                                loading="lazy"
-                                className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                            <span
-                                aria-hidden="true"
-                                className="absolute inset-0 bg-[linear-gradient(180deg,rgba(27,14,54,0)_32%,rgba(27,14,54,0.9)_100%)]"
-                            />
-                            <span className="relative font-display text-xl leading-snug font-medium text-white">
-                                {specialism.title}
-                            </span>
-                            <span className="relative mt-1.5 text-[13px] leading-relaxed text-white/85">
-                                {specialism.description}
-                            </span>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-        </section>
-    );
-}
-
 function ChannelPartners() {
+    const renderLogoRow = (isDuplicate: boolean) => (
+        <ul
+            aria-hidden={isDuplicate || undefined}
+            className={cn(
+                'flex shrink-0 items-center gap-5 pr-5 motion-reduce:w-full motion-reduce:shrink motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:pr-0',
+                isDuplicate && 'motion-reduce:hidden',
+            )}
+        >
+            {channelPartners.map((partner) => (
+                <li
+                    key={partner.logo}
+                    className="group flex h-[108px] w-[200px] shrink-0 items-center justify-center rounded-[24px] border border-hairline bg-white shadow-[0_20px_44px_-36px_rgba(46,23,96,0.5)] transition-[translate,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:border-plum-100 hover:shadow-[0_30px_60px_-36px_rgba(46,23,96,0.55)] sm:w-[220px]"
+                >
+                    <img
+                        src={`/images/partners/${partner.logo}.webp`}
+                        alt={isDuplicate ? '' : partner.name}
+                        loading="lazy"
+                        width={100}
+                        height={50}
+                        className="opacity-70 grayscale transition-[filter,opacity] duration-500 group-hover:opacity-100 group-hover:grayscale-0"
+                    />
+                </li>
+            ))}
+        </ul>
+    );
+
     return (
-        <section className="site-container pb-14 lg:pb-16">
-            <Eyebrow centered>Our Channel Partners</Eyebrow>
-            <ul className="mt-6 grid grid-cols-2 border-t border-l border-hairline sm:grid-cols-3 md:grid-cols-5">
-                {channelPartners.map((partner) => (
-                    <li
-                        key={partner.logo}
-                        className="flex h-[84px] items-center justify-center border-r border-b border-hairline"
-                    >
-                        <img
-                            src={`/images/partners/${partner.logo}.webp`}
-                            alt={partner.name}
-                            loading="lazy"
-                            width={100}
-                            height={50}
-                            className="mix-blend-multiply"
-                        />
-                    </li>
-                ))}
-            </ul>
+        <section
+            id="channel-partners"
+            className="relative mb-14 scroll-mt-20 overflow-hidden border-y border-hairline bg-[linear-gradient(180deg,var(--color-plum-50),#ffffff_85%)] pt-16 pb-12 lg:mb-16 lg:pt-20 lg:pb-14"
+        >
+            <div className="site-container flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+                <div>
+                    <Eyebrow className="text-[13px] font-bold tracking-[0.24em]">
+                        Our Network
+                    </Eyebrow>
+                    <DisplayHeading className="mt-4 text-[clamp(2rem,3.2vw,2.875rem)] leading-[1.1] text-plum-900">
+                        Our Channel <Highlight>Partners</Highlight>
+                    </DisplayHeading>
+                </div>
+                <p className="max-w-md text-[15px] leading-[1.8] text-soft">
+                    We work hand in hand with some of the UAE’s most respected
+                    developers, so every client buys with confidence.
+                </p>
+            </div>
+
+            <div className="mt-10 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)] motion-reduce:[mask-image:none] lg:mt-12">
+                <div className="flex w-max animate-marquee py-4 hover:[animation-play-state:paused] motion-reduce:site-container motion-reduce:w-full motion-reduce:animate-none">
+                    {renderLogoRow(false)}
+                    {renderLogoRow(true)}
+                </div>
+            </div>
         </section>
     );
 }
 
-export default function Home({
-    featuredProperties,
-    budgets,
-}: {
-    featuredProperties: Property[];
-    budgets: SelectOption[];
-}) {
+export default function Home({ budgets }: { budgets: SelectOption[] }) {
     const site = useSite();
 
     return (
@@ -354,9 +703,8 @@ export default function Home({
             <HomeHero budgets={budgets} />
             <WhatWeOffer />
             <AboutSummary />
-            <FeaturedProperties properties={featuredProperties} />
             <WhoWeAre />
-            <Specialisms />
+            <FeaturedBuildings />
             <ChannelPartners />
             <CtaBand />
         </>

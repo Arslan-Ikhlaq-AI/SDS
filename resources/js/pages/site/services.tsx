@@ -259,12 +259,13 @@ function ResidentialCommercialSection() {
                     </DisplayHeading>
                     <div className="mt-6 grid gap-x-10 gap-y-4 text-[15px] leading-[1.75] text-body sm:grid-cols-2">
                         <p>
-                            At {site.name}, we specialize in brokerage services
-                            for residential and commercial properties, including
-                            apartments, shops, and warehouses. Whether you’re
-                            searching for a retail space to grow your business,
-                            or a warehouse for your operations, our expert team
-                            connects you with the best available options.
+                            At {site.name}, we specialize in managing, leasing
+                            and selling residential and commercial properties,
+                            including apartments, shops, and warehouses. Whether
+                            you’re searching for a retail space to grow your
+                            business, or a warehouse for your operations, our
+                            expert team connects you with the best available
+                            options.
                         </p>
                         <p>
                             With a client-focused approach and in-depth market
@@ -344,7 +345,7 @@ export default function Services() {
         <>
             <SeoHead
                 title="Our Services"
-                description={`Off-plan, primary and secondary properties, labor accommodation, residential and commercial brokerage in Dubai with ${site.name}.`}
+                description={`Off-plan, primary and secondary properties, labor accommodation, residential and commercial properties in Dubai with ${site.name}.`}
                 image="/images/services/dubai-panorama.webp"
             />
             <PageHero

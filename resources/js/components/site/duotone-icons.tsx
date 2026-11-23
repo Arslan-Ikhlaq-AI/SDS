@@ -71,7 +71,7 @@ export function HouseKeyIcon(props: IconProps) {
                 cx="11.5"
                 cy="37.5"
                 r="5.25"
-                fill="var(--color-tile)"
+                fill="var(--icon-backdrop, var(--color-tile))"
                 stroke={accent}
             />
             <path d="M16.75 37.5H38" stroke={accent} />
@@ -80,15 +80,20 @@ export function HouseKeyIcon(props: IconProps) {
     );
 }
 
-export function GrowthChartIcon(props: IconProps) {
+export function HouseGearIcon(props: IconProps) {
     return (
         <DuotoneIcon {...props}>
-            <path d="M6 43h36" />
-            <path d="M8.5 43v-8.5h7V43" stroke={accent} />
-            <path d="M20 43V27h7v16" />
-            <path d="M31.5 43V19.5h7V43" />
-            <path d="m7 26.5 11-9 6.5 4.5L38 8.5" stroke={accent} />
-            <path d="M30.5 7.5H39V16" stroke={accent} />
+            <path d="M5.5 21.5 22 7l16.5 14.5" />
+            <path d="M10 17.5V40h11" />
+            <path d="M34 17.5v3" />
+            <path d="M15 40v-7h5v7" />
+            <circle cx="34" cy="34.5" r="5.25" stroke={accent} />
+            <path
+                d="M40.25 34.5h3M38.42 38.92l2.12 2.12M34 40.75v3M29.58 38.92l-2.12 2.12M27.75 34.5h-3M29.58 30.08l-2.12-2.12M34 28.25v-3M38.42 30.08l2.12-2.12"
+                stroke={accent}
+                strokeWidth="3.5"
+                strokeLinecap="butt"
+            />
         </DuotoneIcon>
     );
 }

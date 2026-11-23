@@ -13,6 +13,7 @@ export type SiteDetails = {
     phone: string;
     phone_display: string;
     whatsapp: string;
+    whatsapp_display: string;
     email: string;
     address: {
         line_one: string;

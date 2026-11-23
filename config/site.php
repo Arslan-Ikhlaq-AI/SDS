@@ -6,7 +6,7 @@
 |--------------------------------------------------------------------------
 |
 | Everything that identifies the business on the public website lives here
-| (the contact details and people are placeholders until the client supplies theirs):
+| (the social profiles and people are placeholders until the client supplies theirs):
 | the name shown in headings and body copy, contact details, social profiles
 | and the agent named on listings. Change a value here and every page, the
 | legal documents and the enquiry email follow.
@@ -25,18 +25,20 @@ return [
 
     'cities' => ['Dubai', 'Sharjah', 'Ajman', 'Abu Dhabi'],
 
-    'phone' => '+971501234567',
+    'phone' => '+97142682833',
 
-    'phone_display' => '+971 50 123 4567',
+    'phone_display' => '+971 4 268 2833',
 
-    'whatsapp' => '971501234567',
+    'whatsapp' => '971523354336',
+
+    'whatsapp_display' => '+971 52 335 4336',
 
     'email' => 'info@sdsrealestate.ae',
 
     'address' => [
-        'line_one' => 'Office 1207, Level 12, Bay Square',
-        'line_two' => 'Business Bay, Dubai, UAE',
-        'map_url' => 'https://www.google.com/maps/search/?api=1&query=Business+Bay+Dubai',
+        'line_one' => 'Office 404, Building 30',
+        'line_two' => 'Al Qusais Industrial Area 01, Dubai, UAE',
+        'map_url' => 'https://www.google.com/maps/search/?api=1&query=Building+30%2C+Al+Qusais+Industrial+Area+1%2C+Dubai%2C+UAE',
     ],
 
     'social' => [
