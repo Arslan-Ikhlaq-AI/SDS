@@ -16,7 +16,7 @@ main() {
     local app_dir="$HOME/sds"
     local branch="main"
     local php="/opt/alt/php83/usr/bin/php"
-    local composer="/opt/cpanel/composer/bin/composer"
+    local composer="$HOME/bin/composer.phar"
     local lock_file="$HOME/.sds-deploy.lock"
 
     export HOME
@@ -43,6 +43,22 @@ main() {
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') deploying ${latest_commit:0:7}: $(git log -1 --format=%s "origin/$branch")"
 
     git reset --hard "origin/$branch"
+
+    # The host has no Composer, so install it once with the official,
+    # checksum-verified installer.
+    if [[ ! -f "$composer" ]]; then
+        mkdir -p "$HOME/bin"
+        curl -fsSL -o "$HOME/bin/composer-setup.php" https://getcomposer.org/installer
+        local expected_hash
+        expected_hash="$(curl -fsSL https://composer.github.io/installer.sig)"
+        if [[ "$("$php" -r "echo hash_file('sha384', '$HOME/bin/composer-setup.php');")" != "$expected_hash" ]]; then
+            echo "Composer installer checksum mismatch"
+            rm -f "$HOME/bin/composer-setup.php"
+            exit 1
+        fi
+        "$php" "$HOME/bin/composer-setup.php" --quiet --install-dir="$HOME/bin" --filename=composer.phar
+        rm -f "$HOME/bin/composer-setup.php"
+    fi
 
     "$php" "$composer" install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-progress
 
