@@ -25,9 +25,10 @@ main() {
 
     cd "$app_dir"
 
-    # Never run two deploys at the same time.
+    # Never run two deploys at the same time. Exit non-zero so a caller never
+    # mistakes "skipped" for "deployed"; cron simply retries on its next run.
     exec 9>"$lock_file"
-    flock -n 9 || exit 0
+    flock -n 9 || exit 1
 
     git fetch --quiet origin "$branch"
 
@@ -36,7 +37,9 @@ main() {
     current_commit="$(git rev-parse HEAD)"
     latest_commit="$(git rev-parse "origin/$branch")"
 
-    if [[ "$current_commit" == "$latest_commit" && "${1:-}" != "--force" ]]; then
+    # Deploy when GitHub has new commits, when forced, or when a previous
+    # deploy never finished installing dependencies.
+    if [[ "$current_commit" == "$latest_commit" && "${1:-}" != "--force" && -f vendor/autoload.php ]]; then
         exit 0
     fi
 
@@ -64,6 +67,8 @@ main() {
 
     touch database/database.sqlite
     "$php" artisan migrate --force
+    # Property listings live in PropertySeeder; it updates rather than duplicates.
+    "$php" artisan db:seed --force
     "$php" artisan optimize:clear
     "$php" artisan optimize
 
