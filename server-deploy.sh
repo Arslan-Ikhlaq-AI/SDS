@@ -67,8 +67,10 @@ main() {
 
     touch database/database.sqlite
     "$php" artisan migrate --force
-    # Property listings live in PropertySeeder; it updates rather than duplicates.
+    # Loads the first listings into an empty website; does nothing once any exist.
     "$php" artisan db:seed --force
+    # Photos added in the admin panel are served from public/storage.
+    ln -sfn ../storage/app/public public/storage
     "$php" artisan optimize:clear
     "$php" artisan optimize
 
