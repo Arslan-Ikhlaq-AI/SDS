@@ -9,7 +9,7 @@ import InputError from '@/components/input-error';
 import { cn } from '@/lib/utils';
 
 const controlClasses =
-    'w-full rounded-lg border border-plum-900/15 bg-white text-[15px] text-ink transition-colors outline-none placeholder:text-soft/70 hover:border-plum-900/30 focus:border-plum-700 focus:ring-3 focus:ring-plum-700/10 aria-invalid:border-red-500';
+    'w-full rounded-xl border border-plum-900/15 bg-white text-[15px] text-ink transition-colors outline-none placeholder:text-soft/70 hover:border-plum-900/30 focus:border-plum-700 focus:ring-3 focus:ring-plum-700/10 aria-invalid:border-red-500';
 
 function Field({
     label,

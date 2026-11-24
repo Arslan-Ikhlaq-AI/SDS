@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\EnquiryPurpose;
 use App\Mail\EnquiryReceived;
 use App\Models\Enquiry;
 use App\Models\Property;
@@ -44,6 +45,22 @@ test('a contact enquiry is saved and emailed to the sales team', function () {
 
     Mail::assertSent(EnquiryReceived::class, fn (EnquiryReceived $mail) => $mail->hasTo(config('site.enquiries_email'))
         && $mail->enquiry->is($enquiry));
+});
+
+test('an enquiry keeps what the visitor wants and the details that go with it', function () {
+    Mail::fake();
+
+    $this->post(route('enquiries.store'), validEnquiry([
+        'purpose' => 'rent-out-and-manage',
+        'area' => 'Al Barsha 1',
+        'available_from' => '2027-01-15',
+    ]))->assertSessionHasNoErrors();
+
+    $enquiry = Enquiry::sole();
+
+    expect($enquiry->purpose)->toBe(EnquiryPurpose::RentOutAndManage)
+        ->and($enquiry->area)->toBe('Al Barsha 1')
+        ->and($enquiry->available_from->toDateString())->toBe('2027-01-15');
 });
 
 test('a property enquiry is linked to its listing', function () {
@@ -91,6 +108,9 @@ test('an enquiry with an invalid field shows the right message', function (strin
     'invalid email' => ['email', 'not-an-email', 'The email field must be a valid email address.'],
     'invalid phone' => ['phone', 'call me', 'Please enter a valid phone number.'],
     'unknown source' => ['source', 'robot', 'The selected source is invalid.'],
+    'unknown purpose' => ['purpose', 'borrow', 'The selected purpose is invalid.'],
+    'invalid date' => ['available_from', 'next month', 'Please enter a valid date.'],
+    'area too long' => ['area', str_repeat('a', 121), 'The area field must not be greater than 120 characters.'],
     'unknown role' => ['role', 'landlord', 'The selected role is invalid.'],
     'city outside the UAE' => ['city', 'London', 'The selected city is invalid.'],
     'too many bedrooms' => ['bedrooms', '51', 'The bedrooms field must not be greater than 50.'],

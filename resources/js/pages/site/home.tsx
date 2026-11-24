@@ -13,7 +13,6 @@ import type { LucideIcon } from 'lucide-react';
 import { CtaBand } from '@/components/site/cta-band';
 import { HomeHero } from '@/components/site/home-hero';
 import { OfferColumns } from '@/components/site/offer-columns';
-import { LogoMark } from '@/components/site/logo';
 import { PillLink } from '@/components/site/pill-link';
 import {
     DisplayHeading,
@@ -43,13 +42,6 @@ const channelPartners = [
     { name: 'Pre Real Estate Agency', logo: 'pre-realestate' },
 ];
 
-/** Headline figures; each value is shown with a trailing “+”. */
-const stats = [
-    { value: '80', label: 'Team Members' },
-    { value: '5k', label: 'Happy Clients' },
-    { value: '80', label: 'Properties' },
-];
-
 type FeaturedBuilding = {
     title: string;
     location: string;
@@ -57,6 +49,8 @@ type FeaturedBuilding = {
     image: string;
     imagePosition: string;
     facts: string[];
+    /** The live listing the card opens while that listing is shown on the website. */
+    listingSlug?: string;
     href: string;
 };
 
@@ -86,9 +80,8 @@ const featuredBuildingGroups: FeaturedBuildingGroup[] = [
                 image: '/images/properties/marquis-insignia/exterior-pool.webp',
                 imagePosition: 'object-[42%_50%]',
                 facts: ['B+G+9+R', '1–3 Bedrooms', 'Rooftop Pool'],
-                href: showProperty.url(
-                    'marquis-insignia-1-bedroom-luxurious-apartment',
-                ),
+                listingSlug: 'marquis-insignia-1-bedroom-luxurious-apartment',
+                href: propertiesIndex.url({ query: { type: 'residential' } }),
             },
             {
                 title: 'Ready Apartment Towers',
@@ -115,7 +108,8 @@ const featuredBuildingGroups: FeaturedBuildingGroup[] = [
                 image: '/images/properties/bin-sanad-camp/street-view.webp',
                 imagePosition: 'object-[22%_50%]',
                 facts: ['Shared Kitchens', 'Laundry', 'Courtyard'],
-                href: showProperty.url('bin-sanad-camp-al-quoz'),
+                listingSlug: 'bin-sanad-camp-al-quoz',
+                href: propertiesIndex.url({ query: { type: 'Labor Camp' } }),
             },
             {
                 title: 'Staff Accommodation',
@@ -174,7 +168,6 @@ function WhatWeOffer() {
 
 function AboutSummary() {
     const site = useSite();
-    const happyClients = stats[1];
 
     const qualities = [
         {
@@ -226,17 +219,6 @@ function AboutSummary() {
                         loading="lazy"
                         className="absolute right-0 bottom-0 aspect-[4/5] w-[44%] rounded-[22px] object-cover shadow-[0_30px_60px_-30px_rgba(27,14,54,0.75)] ring-[7px] ring-white"
                     />
-                    <div className="absolute top-12 -left-1 flex items-center gap-3.5 rounded-[20px] border border-white/70 bg-white/90 py-3.5 pr-6 pl-4 shadow-[0_24px_50px_-28px_rgba(46,23,96,0.6)] backdrop-blur-md sm:top-16 sm:-left-4">
-                        <span className="font-display text-[34px] leading-none font-medium text-tangerine-500 lining-nums">
-                            {happyClients.value}+
-                        </span>
-                        <span className="text-[11.5px] leading-snug font-semibold tracking-[0.14em] text-plum-800 uppercase">
-                            {happyClients.label}
-                            <span className="block font-normal tracking-normal text-soft normal-case">
-                                across the UAE
-                            </span>
-                        </span>
-                    </div>
                 </div>
 
                 <div>
@@ -328,153 +310,20 @@ function AboutSummary() {
     );
 }
 
-function WhoWeAre() {
-    const site = useSite();
+function FeaturedBuildingCard({
+    building,
+    featuredSlugs,
+}: {
+    building: FeaturedBuilding;
+    featuredSlugs: string[];
+}) {
+    const { listingSlug } = building;
+    const isListed =
+        listingSlug !== undefined && featuredSlugs.includes(listingSlug);
 
-    const reasons = [
-        {
-            title: 'Team',
-            description:
-                'Our team is strongly aligned with the company’s mission and vision in successive and exponential progress through working hand in hand.',
-            icon: UsersRound,
-        },
-        {
-            title: 'Commitment',
-            description:
-                'We uphold our assurances with dedication and transparency, ensuring trust and safeguarding long-lasting relationships with our clientele.',
-            icon: ShieldCheck,
-        },
-        {
-            title: 'Respect',
-            description:
-                'It is important we treat our stakeholders with the utmost respect as we believe in garnering strong relationships with anyone we meet.',
-            icon: Handshake,
-        },
-    ];
-
-    return (
-        <section
-            id="who-we-are"
-            className="relative isolate scroll-mt-20 overflow-hidden bg-plum-950 py-20 text-white sm:py-24 lg:py-28"
-        >
-            <img
-                src="/images/services/dubai-panorama.webp"
-                alt=""
-                loading="lazy"
-                className="absolute inset-0 -z-20 size-full object-cover opacity-[0.14] mix-blend-luminosity"
-            />
-            <span
-                aria-hidden="true"
-                className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_55%_50%_at_88%_0%,rgba(246,152,28,0.16),transparent_70%),radial-gradient(ellipse_65%_60%_at_0%_100%,rgba(76,45,143,0.6),transparent_72%),linear-gradient(180deg,rgba(27,14,54,0.6),rgba(27,14,54,0.94))]"
-            />
-
-            <div className="site-container">
-                <div className="grid items-end gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16 xl:gap-24">
-                    <div>
-                        <Eyebrow
-                            tone="light"
-                            className="text-[13px] font-bold tracking-[0.24em]"
-                        >
-                            {site.name}
-                        </Eyebrow>
-                        <DisplayHeading className="mt-4 text-[clamp(2.125rem,3.8vw,3.375rem)] leading-[1.08] text-white">
-                            Who We <Highlight>Are</Highlight>?
-                        </DisplayHeading>
-                        <p className="mt-6 max-w-xl text-[16px] leading-[1.8] text-pretty text-white/75 sm:text-[17px]">
-                            {site.name} is a trusted real estate company in
-                            Dubai, connecting buyers, sellers, and investors
-                            with top properties.
-                        </p>
-                    </div>
-
-                    <dl className="grid grid-cols-3 divide-x divide-white/10 rounded-[28px] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] py-8 shadow-[0_40px_80px_-50px_rgba(0,0,0,0.8)] backdrop-blur-md sm:py-10">
-                        {stats.map((stat) => (
-                            <div
-                                key={stat.label}
-                                className="flex flex-col-reverse items-center justify-end gap-3 px-2 text-center"
-                            >
-                                <dt className="text-[10.5px] font-semibold tracking-[0.16em] text-white/60 uppercase sm:text-[12px] sm:tracking-[0.2em]">
-                                    {stat.label}
-                                </dt>
-                                <dd className="font-display text-[clamp(2.25rem,4.6vw,4rem)] leading-none font-medium text-white lining-nums">
-                                    {stat.value}
-                                    <span className="text-tangerine-500">
-                                        +
-                                    </span>
-                                </dd>
-                            </div>
-                        ))}
-                    </dl>
-                </div>
-
-                <div
-                    aria-hidden="true"
-                    className="mt-20 flex items-center gap-5 lg:mt-24"
-                >
-                    <span className="h-px flex-1 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2))]" />
-                    <LogoMark
-                        variant="light"
-                        className="h-4 w-auto opacity-60"
-                    />
-                    <span className="h-px flex-1 bg-[linear-gradient(90deg,rgba(255,255,255,0.2),transparent)]" />
-                </div>
-
-                <div className="mt-14 flex flex-col gap-5 lg:mt-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-                    <h3 className="max-w-[50rem] font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-[1.15] font-medium tracking-[-0.01em] text-white">
-                        Why {site.name} is{' '}
-                        <Highlight>The Perfect Choice?</Highlight>
-                    </h3>
-                    <p className="max-w-md text-[15px] leading-[1.8] text-white/65">
-                        Three values guide every property we manage and every
-                        deal we close.
-                    </p>
-                </div>
-
-                <ol className="mt-10 grid gap-5 md:grid-cols-3 lg:mt-12 lg:gap-6">
-                    {reasons.map((reason, index) => (
-                        <li
-                            key={reason.title}
-                            className="group relative flex flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.07),rgba(255,255,255,0.015))] p-8 backdrop-blur-md transition-[translate,border-color] duration-500 ease-out hover:-translate-y-1.5 hover:border-tangerine-500/40 xl:p-10"
-                        >
-                            <span
-                                aria-hidden="true"
-                                className="absolute inset-x-8 top-0 h-[2px] origin-left scale-x-0 rounded-b-full bg-[linear-gradient(90deg,var(--color-tangerine-500),var(--color-tangerine-400))] transition-transform duration-500 ease-out group-hover:scale-x-100"
-                            />
-                            <span
-                                aria-hidden="true"
-                                className="pointer-events-none absolute top-5 right-7 font-display text-[88px] leading-none font-medium text-white/[0.06] italic lining-nums transition-colors duration-500 group-hover:text-tangerine-500/20"
-                            >
-                                0{index + 1}
-                            </span>
-                            <span className="flex size-14 items-center justify-center rounded-full bg-[linear-gradient(145deg,var(--color-tangerine-400),var(--color-tangerine-600))] text-plum-950 shadow-[0_16px_32px_-14px_rgba(246,152,28,0.8)] ring-[6px] ring-white/[0.06] transition-shadow duration-500 group-hover:ring-tangerine-500/15">
-                                <reason.icon
-                                    aria-hidden="true"
-                                    strokeWidth={1.6}
-                                    className="size-6"
-                                />
-                            </span>
-                            <h4 className="mt-9 font-display text-[25px] leading-tight font-medium text-white">
-                                {reason.title}
-                            </h4>
-                            <span
-                                aria-hidden="true"
-                                className="mt-4 h-px w-10 bg-tangerine-500/80 transition-[width] duration-500 ease-out group-hover:w-20"
-                            />
-                            <p className="mt-5 text-[14.5px] leading-[1.8] text-white/70">
-                                {reason.description}
-                            </p>
-                        </li>
-                    ))}
-                </ol>
-            </div>
-        </section>
-    );
-}
-
-function FeaturedBuildingCard({ building }: { building: FeaturedBuilding }) {
     return (
         <Link
-            href={building.href}
+            href={isListed ? showProperty.url(listingSlug) : building.href}
             className="group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[26px] bg-plum-950 p-6 shadow-[0_30px_60px_-38px_rgba(27,14,54,0.75)] ring-1 ring-plum-950/5 sm:aspect-[3/4] xl:aspect-[4/5] xl:p-7"
         >
             <img
@@ -535,7 +384,7 @@ function FeaturedBuildingCard({ building }: { building: FeaturedBuilding }) {
     );
 }
 
-function FeaturedBuildings() {
+function FeaturedBuildings({ featuredSlugs }: { featuredSlugs: string[] }) {
     return (
         <section
             id="featured-buildings"
@@ -612,6 +461,7 @@ function FeaturedBuildings() {
                                     <li key={building.title}>
                                         <FeaturedBuildingCard
                                             building={building}
+                                            featuredSlugs={featuredSlugs}
                                         />
                                     </li>
                                 ))}
@@ -691,7 +541,13 @@ function ChannelPartners() {
     );
 }
 
-export default function Home({ budgets }: { budgets: SelectOption[] }) {
+export default function Home({
+    budgets,
+    featuredSlugs,
+}: {
+    budgets: SelectOption[];
+    featuredSlugs: string[];
+}) {
     const site = useSite();
 
     return (
@@ -703,8 +559,7 @@ export default function Home({ budgets }: { budgets: SelectOption[] }) {
             <HomeHero budgets={budgets} />
             <WhatWeOffer />
             <AboutSummary />
-            <WhoWeAre />
-            <FeaturedBuildings />
+            <FeaturedBuildings featuredSlugs={featuredSlugs} />
             <ChannelPartners />
             <CtaBand />
         </>

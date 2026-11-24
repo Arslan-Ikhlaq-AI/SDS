@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Property;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('the homepage shows the budget options for the hero search', function () {
@@ -11,6 +12,15 @@ test('the homepage shows the budget options for the hero search', function () {
             ->has('budgets', 15)
             ->where('budgets.0', ['value' => 100000, 'label' => 'AED 100,000'])
         );
+});
+
+test('the homepage only links to featured listings that are shown on the website', function () {
+    $shown = Property::factory()->featured()->create();
+    Property::factory()->featured()->unpublished()->create();
+    Property::factory()->create();
+
+    $this->get(route('home'))
+        ->assertInertia(fn (Assert $page) => $page->where('featuredSlugs', [$shown->slug]));
 });
 
 test('a static page renders its component', function (string $routeName, string $component) {

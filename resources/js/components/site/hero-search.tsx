@@ -26,7 +26,7 @@ const modeOptions = [
     { value: 'management', label: 'Management' },
 ];
 
-function SearchField({
+export function SearchField({
     label,
     icon: Icon,
     children,
@@ -68,7 +68,7 @@ function SearchField({
     );
 }
 
-const controlClasses =
+export const searchControlClasses =
     'mt-0.5 block h-7 w-full cursor-pointer appearance-none truncate bg-transparent pr-7 text-[15.5px] font-medium text-ink outline-none placeholder:font-normal placeholder:text-soft/80';
 
 /**
@@ -185,7 +185,7 @@ export function HeroSearch({
                                 onChange={(event) =>
                                     setManagedType(event.target.value)
                                 }
-                                className={controlClasses}
+                                className={searchControlClasses}
                             >
                                 <option value="">Select type</option>
                                 {site.property_categories.map((category) => (
@@ -217,7 +217,7 @@ export function HeroSearch({
                                 onChange={(event) =>
                                     setManagedCity(event.target.value)
                                 }
-                                className={controlClasses}
+                                className={searchControlClasses}
                             >
                                 <option value="">Select city</option>
                                 {site.cities.map((city) => (
@@ -242,7 +242,7 @@ export function HeroSearch({
                                 onChange={(event) =>
                                     setType(event.target.value)
                                 }
-                                className={controlClasses}
+                                className={searchControlClasses}
                             >
                                 <option value="">Any type</option>
                                 {site.property_categories.map((category) => (
@@ -277,7 +277,7 @@ export function HeroSearch({
                                 onChange={(event) =>
                                     setMaxPrice(event.target.value)
                                 }
-                                className={controlClasses}
+                                className={searchControlClasses}
                             >
                                 <option value="">Any budget</option>
                                 {budgets.map((budget) => (
@@ -304,7 +304,10 @@ export function HeroSearch({
                                     setKeyword(event.target.value)
                                 }
                                 placeholder="Arjan, Al Quoz, Marina…"
-                                className={cn(controlClasses, 'cursor-text')}
+                                className={cn(
+                                    searchControlClasses,
+                                    'cursor-text',
+                                )}
                             />
                         </SearchField>
                     </>

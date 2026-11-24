@@ -7,6 +7,11 @@ import type { SiteDetails } from '@/types/site';
 const MANAGEMENT_ENQUIRY = 'management';
 
 /**
+ * The purpose a property management request starts with.
+ */
+const MANAGEMENT_ENQUIRY_PURPOSE = 'manage';
+
+/**
  * The id of the contact page's enquiry section, which management links scroll to.
  */
 export const ENQUIRY_SECTION_ID = 'enquiry';
@@ -15,10 +20,9 @@ export const ENQUIRY_SECTION_ID = 'enquiry';
  * The values the contact form can start with.
  */
 export type EnquiryDefaults = {
-    role?: string;
+    purpose?: string;
     property_type?: string;
     city?: string;
-    message?: string;
 };
 
 /**
@@ -76,9 +80,8 @@ export function managementEnquiryDefaults(
     );
 
     return {
-        role: 'property-owner',
+        purpose: MANAGEMENT_ENQUIRY_PURPOSE,
         property_type: isOfferedType ? propertyType : '',
         city: site.cities.includes(city) ? city : '',
-        message: `Hello, I would like ${site.name} to manage my property.`,
     };
 }

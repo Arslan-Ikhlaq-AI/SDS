@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -33,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property list<string> $images
  * @property string|null $floor_plan_image
  * @property bool $is_featured
+ * @property bool $is_published
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -56,6 +58,7 @@ use Illuminate\Support\Carbon;
     'images',
     'floor_plan_image',
     'is_featured',
+    'is_published',
 ])]
 class Property extends Model
 {
@@ -80,6 +83,7 @@ class Property extends Model
             'features' => 'array',
             'images' => 'array',
             'is_featured' => 'boolean',
+            'is_published' => 'boolean',
         ];
     }
 
@@ -99,6 +103,48 @@ class Property extends Model
             'value' => $budget,
             'label' => 'AED '.number_format($budget),
         ], $budgets);
+    }
+
+    /**
+     * Get the next free reference, such as "SDS-1003".
+     */
+    public static function nextReference(): string
+    {
+        $prefix = config('site.reference_prefix').'-';
+
+        $highestNumber = self::query()
+            ->where('reference', 'like', "{$prefix}%")
+            ->pluck('reference')
+            ->map(fn (string $reference): int => (int) Str::after($reference, $prefix))
+            ->max();
+
+        return $prefix.(max((int) $highestNumber, 1000) + 1);
+    }
+
+    /**
+     * Get a slug for the title that no other listing uses.
+     */
+    public static function uniqueSlug(string $title): string
+    {
+        $base = Str::slug($title) ?: 'property';
+        $slug = $base;
+
+        for ($suffix = 2; self::query()->where('slug', $slug)->exists(); $suffix++) {
+            $slug = "{$base}-{$suffix}";
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Limit the query to the listings visitors can see on the website.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function published(Builder $query): void
+    {
+        $query->where('is_published', true);
     }
 
     /**

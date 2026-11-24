@@ -147,7 +147,7 @@ function socialLinksFor(site: SiteDetails): {
  */
 function navItemClasses(tone: Tone, isActive: boolean): string {
     return cn(
-        'relative z-10 inline-flex h-11 items-center rounded-full px-3.5 text-[14.5px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-200 xl:px-[18px] xl:text-[15px]',
+        'relative z-10 inline-flex h-11 items-center rounded-full px-[11px] text-[14.5px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-200 xl:px-[15px] xl:text-[15px]',
         isActive
             ? 'bg-plum-600 text-white shadow-[0_10px_24px_-12px_rgba(76,45,143,0.9)]'
             : tone === 'light'
@@ -322,7 +322,7 @@ function MenuEntryLink({ entry }: { entry: MenuEntry }) {
 function triggerClasses(tone: Tone, isActive: boolean): string {
     return cn(
         navItemClasses(tone, isActive),
-        'h-11! rounded-full! px-3.5! py-0! xl:px-[18px]! [&>svg]:ml-1.5 [&>svg]:size-3.5 [&>svg]:opacity-70',
+        'h-11! rounded-full! px-[11px]! py-0! xl:px-[15px]! [&>svg]:ml-1.5 [&>svg]:size-3.5 [&>svg]:opacity-70',
         isActive
             ? 'bg-plum-600! text-white! hover:bg-plum-600! focus:bg-plum-600! data-[state=open]:bg-plum-600!'
             : 'bg-transparent! hover:bg-transparent! focus:bg-transparent! data-[state=open]:bg-transparent!',

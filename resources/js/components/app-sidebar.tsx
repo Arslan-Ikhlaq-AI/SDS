@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Building2, Globe, Inbox, LayoutGrid } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -13,7 +13,9 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, home } from '@/routes';
+import { index as enquiriesIndex } from '@/routes/admin/enquiries';
+import { index as propertiesIndex } from '@/routes/admin/properties';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -24,20 +26,30 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
+const adminNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
+        title: 'Requests',
+        href: enquiriesIndex(),
+        icon: Inbox,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        title: 'Properties',
+        href: propertiesIndex(),
+        icon: Building2,
+    },
+];
+
+const footerNavItems: NavItem[] = [
+    {
+        title: 'View website',
+        href: home(),
+        icon: Globe,
     },
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage().props;
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -53,7 +65,13 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain
+                    items={
+                        auth.user.is_admin
+                            ? [...mainNavItems, ...adminNavItems]
+                            : mainNavItems
+                    }
+                />
             </SidebarContent>
 
             <SidebarFooter>

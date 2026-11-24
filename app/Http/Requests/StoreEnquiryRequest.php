@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EnquiryPurpose;
 use App\Enums\EnquiryRole;
 use App\Enums\EnquirySource;
 use App\Enums\PropertyCategory;
@@ -23,6 +24,7 @@ class StoreEnquiryRequest extends FormRequest
     {
         return [
             'source' => ['required', Rule::enum(EnquirySource::class)],
+            'purpose' => ['nullable', Rule::enum(EnquiryPurpose::class)],
             'property_id' => ['nullable', 'required_if:source,'.EnquirySource::Property->value, 'integer', Rule::exists('properties', 'id')],
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
@@ -31,9 +33,11 @@ class StoreEnquiryRequest extends FormRequest
             'message' => ['nullable', 'string', 'max:5000'],
             'property_type' => ['nullable', Rule::in(PropertyCategory::allTypes())],
             'city' => ['nullable', Rule::in(config('site.cities'))],
+            'area' => ['nullable', 'string', 'max:120'],
             'bedrooms' => ['nullable', 'integer', 'min:0', 'max:50'],
             'bathrooms' => ['nullable', 'integer', 'min:0', 'max:50'],
             'budget' => ['nullable', 'integer', 'min:0', 'max:100000000000'],
+            'available_from' => ['nullable', 'date_format:Y-m-d'],
             'website' => ['prohibited'],
         ];
     }
@@ -47,6 +51,7 @@ class StoreEnquiryRequest extends FormRequest
     {
         return [
             'phone.regex' => 'Please enter a valid phone number.',
+            'available_from.date_format' => 'Please enter a valid date.',
         ];
     }
 }

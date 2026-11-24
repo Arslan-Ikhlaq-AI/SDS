@@ -24,7 +24,7 @@ export function PageHero({
     return (
         <section
             className={cn(
-                'relative isolate overflow-hidden bg-plum-900 pt-32 pb-24 sm:pb-32 lg:pt-40 lg:pb-40',
+                'relative isolate overflow-hidden bg-plum-950 pt-36 pb-28 sm:pt-40 sm:pb-36 lg:pt-[13.25rem] lg:pb-48',
                 className,
             )}
         >
@@ -37,15 +37,22 @@ export function PageHero({
             />
             <div
                 aria-hidden="true"
-                className="absolute inset-0 -z-10 bg-[linear-gradient(95deg,rgba(37,16,75,0.96)_0%,rgba(46,23,96,0.9)_38%,rgba(58,29,113,0.55)_72%,rgba(58,29,113,0.3)_100%)]"
+                className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(27,14,54,0.72)_0%,rgba(27,14,54,0.2)_45%,rgba(27,14,54,0.55)_100%),linear-gradient(95deg,rgba(27,14,54,0.9)_0%,rgba(37,16,75,0.74)_42%,rgba(46,23,96,0.3)_78%,rgba(46,23,96,0.16)_100%)]"
             />
             <div className="site-container">
-                {eyebrow && <Eyebrow tone="light">{eyebrow}</Eyebrow>}
-                <h1 className="mt-3 max-w-3xl font-display text-[clamp(2.125rem,4.4vw,3.5rem)] leading-[1.08] font-medium text-white">
+                {eyebrow && (
+                    <Eyebrow
+                        tone="light"
+                        className="text-[13px] font-bold tracking-[0.24em]"
+                    >
+                        {eyebrow}
+                    </Eyebrow>
+                )}
+                <h1 className="mt-4 max-w-[58rem] font-display text-[clamp(2.25rem,4.5vw,4rem)] leading-[1.08] font-medium tracking-[-0.01em] text-balance text-white lining-nums">
                     {title}
                 </h1>
                 {children && (
-                    <div className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/85 sm:text-[17px]">
+                    <div className="mt-5 max-w-[42rem] text-[15.5px] leading-[1.75] text-pretty text-white/90 sm:text-[17px]">
                         {children}
                     </div>
                 )}

@@ -8,7 +8,6 @@ import {
     TextField,
 } from '@/components/site/form-controls';
 import { useSite } from '@/hooks/use-site';
-import type { EnquiryDefaults } from '@/lib/management-enquiry';
 import { terms } from '@/routes';
 import { store } from '@/routes/enquiries';
 import type { Property } from '@/types/site';
@@ -28,7 +27,7 @@ const listingRoles = [
     { value: 'other', label: 'Other' },
 ];
 
-function SuccessNotice({ message }: { message: string }) {
+export function SuccessNotice({ message }: { message: string }) {
     return (
         <p
             role="status"
@@ -52,17 +51,14 @@ function FormGroupLabel({ children }: { children: string }) {
 }
 
 /**
- * The full enquiry form, used for general contact and for valuation requests.
- * `defaults` fills fields in ahead of time, such as for a management request.
+ * The full enquiry form, used for valuation requests.
  */
 export function EnquiryForm({
     source,
     submitLabel = 'Submit',
-    defaults = {},
 }: {
     source: 'contact' | 'valuation';
     submitLabel?: string;
-    defaults?: EnquiryDefaults;
 }) {
     const site = useSite();
 
@@ -89,7 +85,7 @@ export function EnquiryForm({
                     <SelectField
                         label="I'm a"
                         name="role"
-                        defaultValue={defaults.role ?? ''}
+                        defaultValue=""
                         error={errors.role}
                     >
                         <option value="">Select</option>
@@ -120,7 +116,7 @@ export function EnquiryForm({
                     <SelectField
                         label="Type"
                         name="property_type"
-                        defaultValue={defaults.property_type ?? ''}
+                        defaultValue=""
                         error={errors.property_type}
                     >
                         <option value="">Select</option>
@@ -143,7 +139,7 @@ export function EnquiryForm({
                     <SelectField
                         label="City"
                         name="city"
-                        defaultValue={defaults.city ?? ''}
+                        defaultValue=""
                         error={errors.city}
                     >
                         <option value="">Select</option>
@@ -185,7 +181,6 @@ export function EnquiryForm({
                         label="Message"
                         name="message"
                         className="sm:col-span-2"
-                        defaultValue={defaults.message}
                         error={errors.message}
                     />
 

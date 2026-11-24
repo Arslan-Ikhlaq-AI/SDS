@@ -26,4 +26,14 @@ class EnquiryFactory extends Factory
             'message' => fake()->sentence(),
         ];
     }
+
+    /**
+     * Indicate that the enquiry has been dealt with.
+     */
+    public function handled(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'handled_at' => now(),
+        ]);
+    }
 }

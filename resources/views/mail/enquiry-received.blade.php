@@ -4,6 +4,9 @@
 **Name:** {{ $enquiry->name }}<br>
 **Email:** {{ $enquiry->email }}<br>
 **Phone:** {{ $enquiry->phone }}<br>
+@if ($enquiry->purpose)
+**Would like to:** {{ $enquiry->purpose->label() }}<br>
+@endif
 @if ($enquiry->role)
 **Enquiring as:** {{ $enquiry->role->label() }}<br>
 @endif
@@ -16,6 +19,9 @@
 @if ($enquiry->city)
 **City:** {{ $enquiry->city }}<br>
 @endif
+@if ($enquiry->area)
+**Area or building:** {{ $enquiry->area }}<br>
+@endif
 @if ($enquiry->bedrooms !== null)
 **Bedrooms:** {{ $enquiry->bedrooms }}<br>
 @endif
@@ -23,7 +29,10 @@
 **Bathrooms:** {{ $enquiry->bathrooms }}<br>
 @endif
 @if ($enquiry->budget !== null)
-**Budget:** AED {{ number_format($enquiry->budget) }}<br>
+**{{ $enquiry->purpose?->budgetLabel() ?? 'Budget' }}:** AED {{ number_format($enquiry->budget) }}<br>
+@endif
+@if ($enquiry->available_from)
+**{{ $enquiry->purpose?->dateLabel() ?? 'Date' }}:** {{ $enquiry->available_from->format('j F Y') }}<br>
 @endif
 
 @if ($enquiry->message)

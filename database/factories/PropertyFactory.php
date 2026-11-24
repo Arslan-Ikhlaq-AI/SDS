@@ -35,6 +35,7 @@ class PropertyFactory extends Factory
             'location' => 'Dubai',
             'images' => ['/images/properties/marquis-insignia/bedroom.webp'],
             'is_featured' => false,
+            'is_published' => true,
         ];
     }
 
@@ -45,6 +46,16 @@ class PropertyFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_featured' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the listing is hidden from the website.
+     */
+    public function unpublished(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_published' => false,
         ]);
     }
 

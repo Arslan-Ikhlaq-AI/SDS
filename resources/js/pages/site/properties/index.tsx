@@ -1,10 +1,22 @@
 import { Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import {
+    Building2,
+    ChevronLeft,
+    ChevronRight,
+    MapPin,
+    Search,
+    Wallet,
+} from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { CtaBand } from '@/components/site/cta-band';
 import { NativeSelect } from '@/components/site/form-controls';
+import {
+    SearchField,
+    searchControlClasses,
+} from '@/components/site/hero-search';
 import { PageHero } from '@/components/site/page-hero';
+import { PillAnchor, PillLink, pillClasses } from '@/components/site/pill-link';
 import { PropertyCard, ValuationCard } from '@/components/site/property-card';
 import { Highlight } from '@/components/site/section-heading';
 import { SeoHead } from '@/components/site/seo-head';
@@ -35,14 +47,6 @@ function compactFilters(
     );
 }
 
-function FilterLabel({ children }: { children: string }) {
-    return (
-        <span className="mb-1.5 block text-[13px] font-medium text-plum-900">
-            {children}
-        </span>
-    );
-}
-
 function Pagination({ meta }: { meta: PaginatedProperties['meta'] }) {
     if (meta.last_page <= 1) {
         return null;
@@ -53,7 +57,7 @@ function Pagination({ meta }: { meta: PaginatedProperties['meta'] }) {
     return (
         <nav
             aria-label="Pagination"
-            className="mt-10 flex flex-wrap items-center justify-center gap-1.5"
+            className="mt-16 flex flex-wrap items-center justify-center gap-1.5 border-t border-hairline pt-8"
         >
             {meta.links.map((link, position) => {
                 const isPrevious = position === 0;
@@ -71,9 +75,9 @@ function Pagination({ meta }: { meta: PaginatedProperties['meta'] }) {
                       ? 'Next page'
                       : `Page ${link.label}`;
                 const classes = cn(
-                    'flex size-10 items-center justify-center rounded-full text-sm font-semibold transition-colors',
+                    'flex size-11 items-center justify-center rounded-full text-[15px] font-semibold transition-colors',
                     link.active
-                        ? 'bg-plum-700 text-white'
+                        ? 'bg-plum-800 text-white'
                         : 'text-plum-800 hover:bg-plum-50',
                     link.url === null && 'pointer-events-none opacity-35',
                 );
@@ -151,26 +155,32 @@ export default function PropertiesIndex({
                 image="/images/services/dubai-skyline.webp"
             />
             <PageHero
-                image="/images/services/dubai-panorama.webp"
-                imagePosition="center 40%"
+                image="/images/services/dubai-skyline.webp"
+                imagePosition="center 52%"
                 eyebrow="Properties"
                 title={
                     <>
                         Find Your <Highlight>Perfect Property</Highlight>
                     </>
                 }
-                className="pb-32 sm:pb-36 lg:pb-44"
-            />
+                className="pb-40 sm:pb-44 lg:pb-60"
+            >
+                Apartments, villas, offices, shops, warehouses and labor camps
+                across Dubai, for sale and for rent.
+            </PageHero>
 
-            <section className="relative z-10 site-container -mt-20 sm:-mt-24 lg:-mt-28">
+            <section
+                aria-label="Search properties"
+                className="relative z-10 site-container -mt-28 sm:-mt-28 lg:-mt-40"
+            >
                 <form
                     onSubmit={submitKeyword}
-                    className="rounded-[14px] bg-white p-5 shadow-[0_18px_44px_-20px_rgba(27,14,54,0.4)] sm:p-6"
+                    className="rounded-[32px] border border-hairline bg-white p-2.5 shadow-[0_40px_90px_-46px_rgba(27,14,54,0.6)] lg:rounded-[44px] lg:p-3.5"
                 >
                     <div
                         role="group"
                         aria-label="Status"
-                        className="flex flex-wrap gap-1.5"
+                        className="flex flex-wrap gap-1.5 px-2 pt-1.5 pb-3 lg:px-4"
                     >
                         {statusTabs.map((status) => {
                             const isActive =
@@ -187,10 +197,10 @@ export default function PropertiesIndex({
                                         })
                                     }
                                     className={cn(
-                                        'h-9 cursor-pointer rounded-full px-4 text-[13px] font-semibold transition-colors',
+                                        'h-9 cursor-pointer rounded-full px-4 text-[13px] font-semibold transition-colors duration-200 sm:px-5',
                                         isActive
-                                            ? 'bg-plum-700 text-white'
-                                            : 'bg-plum-50 text-plum-800 hover:bg-plum-100',
+                                            ? 'bg-plum-800 text-white'
+                                            : 'text-plum-800 ring-1 ring-hairline ring-inset hover:bg-plum-50',
                                     )}
                                 >
                                     {status.label}
@@ -198,16 +208,21 @@ export default function PropertiesIndex({
                             );
                         })}
                     </div>
-                    <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.4fr]">
-                        <label className="block">
-                            <FilterLabel>Type</FilterLabel>
-                            <NativeSelect
+                    <div className="grid overflow-hidden rounded-[26px] border border-hairline p-1.5 sm:grid-cols-2 lg:grid-cols-[1.05fr_1fr_1.25fr_auto] lg:items-center lg:rounded-full">
+                        <SearchField
+                            label="Property type"
+                            icon={Building2}
+                            withChevron
+                            className="border-b border-hairline lg:border-r lg:border-b-0"
+                        >
+                            <select
                                 value={currentFilters.type ?? ''}
                                 onChange={(event) =>
                                     applyFilters({ type: event.target.value })
                                 }
+                                className={searchControlClasses}
                             >
-                                <option value="">All types</option>
+                                <option value="">Any type</option>
                                 {site.property_categories.map((category) => (
                                     <optgroup
                                         key={category.value}
@@ -226,17 +241,22 @@ export default function PropertiesIndex({
                                         ))}
                                     </optgroup>
                                 ))}
-                            </NativeSelect>
-                        </label>
-                        <label className="block">
-                            <FilterLabel>Max. budget</FilterLabel>
-                            <NativeSelect
+                            </select>
+                        </SearchField>
+                        <SearchField
+                            label="Max. budget"
+                            icon={Wallet}
+                            withChevron
+                            className="border-b border-hairline sm:border-l lg:border-r lg:border-b-0 lg:border-l-0"
+                        >
+                            <select
                                 value={currentFilters.max_price ?? ''}
                                 onChange={(event) =>
                                     applyFilters({
                                         max_price: event.target.value,
                                     })
                                 }
+                                className={searchControlClasses}
                             >
                                 <option value="">Any budget</option>
                                 {filterOptions.budgets.map((budget) => (
@@ -247,105 +267,102 @@ export default function PropertiesIndex({
                                         {budget.label}
                                     </option>
                                 ))}
-                            </NativeSelect>
-                        </label>
-                        <label className="block sm:col-span-2 lg:col-span-1">
-                            <FilterLabel>Keyword</FilterLabel>
-                            <span className="flex gap-2">
-                                <input
-                                    type="search"
-                                    value={keyword}
-                                    maxLength={100}
-                                    onChange={(event) =>
-                                        setKeyword(event.target.value)
-                                    }
-                                    placeholder="Location, title or reference"
-                                    className="h-12 w-full min-w-0 rounded-lg border border-plum-900/15 bg-white px-4 text-[15px] text-ink transition-colors outline-none placeholder:text-soft/70 hover:border-plum-900/30 focus:border-plum-700 focus:ring-3 focus:ring-plum-700/10"
+                            </select>
+                        </SearchField>
+                        <SearchField
+                            label="Location or keyword"
+                            icon={MapPin}
+                            className="border-b border-hairline sm:col-span-2 lg:col-span-1 lg:border-b-0"
+                        >
+                            <input
+                                type="search"
+                                value={keyword}
+                                maxLength={100}
+                                onChange={(event) =>
+                                    setKeyword(event.target.value)
+                                }
+                                placeholder="Location, title or reference"
+                                className={cn(
+                                    searchControlClasses,
+                                    'cursor-text',
+                                )}
+                            />
+                        </SearchField>
+                        <div className="p-1 sm:col-span-2 lg:col-span-1">
+                            <button
+                                type="submit"
+                                className="group flex h-14 w-full cursor-pointer items-center justify-center gap-2.5 rounded-full bg-[linear-gradient(135deg,var(--color-plum-600),var(--color-plum-800))] px-10 text-[15px] font-semibold text-white shadow-[0_14px_30px_-14px_rgba(46,23,96,0.9)] transition-[filter] duration-200 hover:brightness-115 lg:h-[60px]"
+                            >
+                                <Search
+                                    aria-hidden="true"
+                                    className="size-[18px] transition-transform duration-300 group-hover:scale-110"
                                 />
-                                <button
-                                    type="submit"
-                                    aria-label="Search"
-                                    className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-tangerine-500 text-plum-950 transition-colors hover:bg-tangerine-400"
-                                >
-                                    <Search
-                                        aria-hidden="true"
-                                        className="size-[18px]"
-                                    />
-                                </button>
-                            </span>
-                        </label>
+                                Search
+                            </button>
+                        </div>
                     </div>
                 </form>
             </section>
 
-            <section className="site-container pt-9 pb-14 lg:pb-20">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p
-                        role="status"
-                        className="text-sm font-medium text-plum-900"
-                    >
-                        {total} {total === 1 ? 'property' : 'properties'}
+            <section className="site-container pt-16 pb-20 lg:pt-20 lg:pb-28">
+                <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 border-b border-hairline pb-6">
+                    <div role="status">
+                        <h2 className="font-display text-[clamp(1.75rem,2.6vw,2.375rem)] leading-[1.15] font-medium text-plum-900 lining-nums">
+                            {total} {total === 1 ? 'property' : 'properties'}
+                        </h2>
                         {hasFilters && (
                             <button
                                 type="button"
                                 onClick={clearFilters}
-                                className="ml-3 cursor-pointer font-normal text-soft underline underline-offset-2 hover:text-plum-700"
+                                className="mt-2 cursor-pointer text-[14px] font-medium text-soft underline decoration-tangerine-500 underline-offset-4 hover:text-plum-700"
                             >
                                 Clear filters
                             </button>
                         )}
-                    </p>
-                    <label className="flex items-center gap-2.5 text-[13px] text-soft">
-                        Sort by
-                        <NativeSelect
-                            value={currentFilters.sort ?? 'newest'}
-                            onChange={(event) =>
-                                applyFilters({ sort: event.target.value })
-                            }
-                            className="h-10 min-w-48 text-sm"
-                        >
-                            {filterOptions.sorts.map((sort) => (
-                                <option key={sort.value} value={sort.value}>
-                                    {sort.label}
-                                </option>
-                            ))}
-                        </NativeSelect>
-                    </label>
+                    </div>
+                    {properties.data.length > 0 && (
+                        <label className="flex items-center gap-3 text-[14px] text-soft">
+                            Sort by
+                            <NativeSelect
+                                value={currentFilters.sort ?? 'newest'}
+                                onChange={(event) =>
+                                    applyFilters({ sort: event.target.value })
+                                }
+                                className="h-11 min-w-52 rounded-full pl-5 text-[14px] font-medium"
+                            >
+                                {filterOptions.sorts.map((sort) => (
+                                    <option key={sort.value} value={sort.value}>
+                                        {sort.label}
+                                    </option>
+                                ))}
+                            </NativeSelect>
+                        </label>
+                    )}
                 </div>
 
                 {properties.data.length > 0 ? (
-                    <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="mt-10 grid gap-x-7 gap-y-14 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 xl:gap-x-9">
                         {properties.data.map((property) => (
                             <PropertyCard
                                 key={property.id}
                                 property={property}
                             />
                         ))}
-                        {properties.meta.total < 3 && <ValuationCard />}
+                        {total < 3 && (
+                            <div
+                                className={cn(
+                                    total === 2 && 'sm:max-lg:col-span-2',
+                                )}
+                            >
+                                <ValuationCard />
+                            </div>
+                        )}
                     </div>
                 ) : (
-                    <div className="mt-6 rounded-[14px] bg-plum-50 px-6 py-14 text-center">
-                        <h2 className="font-display text-2xl font-medium text-ink">
-                            No properties match your search
-                        </h2>
-                        <p className="mx-auto mt-2 max-w-md text-[15px] leading-relaxed text-body">
-                            Try a wider search, or{' '}
-                            <Link
-                                href={contact()}
-                                className="font-semibold text-plum-700 underline underline-offset-2"
-                            >
-                                tell our team what you’re looking for
-                            </Link>
-                            .
-                        </p>
-                        <button
-                            type="button"
-                            onClick={clearFilters}
-                            className="mt-5 h-11 cursor-pointer rounded-full bg-plum-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-plum-800"
-                        >
-                            Clear filters
-                        </button>
-                    </div>
+                    <NoProperties
+                        hasFilters={hasFilters}
+                        onClearFilters={clearFilters}
+                    />
                 )}
 
                 <Pagination meta={properties.meta} />
@@ -353,5 +370,66 @@ export default function PropertiesIndex({
 
             <CtaBand />
         </>
+    );
+}
+
+function NoProperties({
+    hasFilters,
+    onClearFilters,
+}: {
+    hasFilters: boolean;
+    onClearFilters: () => void;
+}) {
+    const site = useSite();
+
+    return (
+        <div className="grid items-center gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-20 lg:py-20">
+            <div>
+                <p className="font-display text-[clamp(1.75rem,3vw,2.625rem)] leading-[1.15] font-medium text-balance text-plum-900">
+                    {hasFilters
+                        ? 'No properties match your search'
+                        : 'No properties are listed right now'}
+                </p>
+                <p className="mt-5 max-w-lg text-[16px] leading-[1.8] text-body">
+                    {hasFilters
+                        ? 'Try a wider search, or tell our team what you’re looking for.'
+                        : 'Tell our team what you’re looking for and we will help you find it.'}
+                </p>
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                    <PillLink
+                        href={contact()}
+                        variant="plum"
+                        className="h-12 px-7 xl:h-12 xl:px-7"
+                    >
+                        Talk to Our Team
+                    </PillLink>
+                    {hasFilters ? (
+                        <button
+                            type="button"
+                            onClick={onClearFilters}
+                            className={pillClasses(
+                                'outline-plum',
+                                'h-12 cursor-pointer px-7 xl:h-12 xl:px-7',
+                            )}
+                        >
+                            Clear filters
+                        </button>
+                    ) : (
+                        <PillAnchor
+                            href={`tel:${site.phone}`}
+                            variant="outline-plum"
+                            className="h-12 px-7 xl:h-12 xl:px-7"
+                        >
+                            {site.phone_display}
+                        </PillAnchor>
+                    )}
+                </div>
+            </div>
+            <img
+                src="/images/services/primary-secondary.webp"
+                alt=""
+                className="aspect-[4/3] w-full rounded-[28px] object-cover"
+            />
+        </div>
     );
 }

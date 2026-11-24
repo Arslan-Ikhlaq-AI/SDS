@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\EnquiryPurpose;
 use App\Enums\EnquiryRole;
 use App\Enums\EnquirySource;
 use App\Mail\EnquiryReceived;
@@ -39,6 +40,30 @@ test('the enquiry email names the listing a property enquiry is about', function
         ->assertHasSubject("Property enquiry from {$enquiry->name}")
         ->assertSeeInOrderInHtml(['Listing:', 'Marina Gate Penthouse (SDS-7777)']);
 });
+
+test('the enquiry email words its details for what the visitor wants', function (EnquiryPurpose $purpose, string $label, string $budgetLabel, string $dateLabel) {
+    $enquiry = Enquiry::factory()->create([
+        'name' => 'Ayesha Khan',
+        'purpose' => $purpose,
+        'area' => 'Al Barsha 1',
+        'budget' => 90000,
+        'available_from' => '2027-01-15',
+    ]);
+
+    (new EnquiryReceived($enquiry))
+        ->assertHasSubject("Contact form ({$label}) from Ayesha Khan")
+        ->assertSeeInOrderInHtml(['Would like to:', $label])
+        ->assertSeeInOrderInHtml(['Area or building:', 'Al Barsha 1'])
+        ->assertSeeInOrderInHtml(["{$budgetLabel}:", 'AED 90,000'])
+        ->assertSeeInOrderInHtml(["{$dateLabel}:", '15 January 2027']);
+})->with([
+    'rent' => [EnquiryPurpose::Rent, 'Rent a property', 'Yearly budget', 'Move-in date'],
+    'buy' => [EnquiryPurpose::Buy, 'Buy a property', 'Budget', 'Move-in date'],
+    'rent out' => [EnquiryPurpose::RentOut, 'Rent out their property', 'Expected yearly rent', 'Available from'],
+    'manage' => [EnquiryPurpose::Manage, 'Have their property managed', 'Expected yearly rent', 'Available from'],
+    'rent out and manage' => [EnquiryPurpose::RentOutAndManage, 'Rent out and have their property managed', 'Expected yearly rent', 'Available from'],
+    'sell' => [EnquiryPurpose::Sell, 'Sell their property', 'Expected price', 'Available from'],
+]);
 
 test('the enquiry email escapes what the visitor typed', function () {
     $enquiry = Enquiry::factory()->create([

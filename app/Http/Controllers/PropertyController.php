@@ -20,6 +20,7 @@ class PropertyController extends Controller
         $filters = $request->validated();
 
         $properties = Property::query()
+            ->published()
             ->matchingFilters($filters)
             ->sortedBy($filters['sort'] ?? null)
             ->paginate(9)
@@ -27,7 +28,7 @@ class PropertyController extends Controller
 
         return Inertia::render('site/properties/index', [
             'properties' => PropertyResource::collection($properties),
-            'filters' => $filters,
+            'filters' => (object) $filters,
             'filterOptions' => [
                 'statuses' => [
                     ['value' => PropertyStatus::ForRent->value, 'label' => PropertyStatus::ForRent->label()],
@@ -48,6 +49,8 @@ class PropertyController extends Controller
      */
     public function show(Property $property): Response
     {
+        abort_unless($property->is_published, 404);
+
         return Inertia::render('site/properties/show', [
             'property' => (new PropertyResource($property))->resolve(),
         ]);

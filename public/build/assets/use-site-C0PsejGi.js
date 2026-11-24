@@ -1,0 +1,1 @@
+import{p as e}from"./utils-CT3LZqLG.js";function t(){return e().props.site}function n(e,t){let n=`https://wa.me/${e.whatsapp}`;return t?`${n}?text=${encodeURIComponent(t)}`:n}export{n,t};

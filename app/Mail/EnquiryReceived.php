@@ -26,8 +26,18 @@ class EnquiryReceived extends Mailable
     {
         return new Envelope(
             replyTo: [new Address($this->enquiry->email, $this->enquiry->name)],
-            subject: "{$this->enquiry->source->label()} from {$this->enquiry->name}",
+            subject: $this->subjectLine(),
         );
+    }
+
+    /**
+     * Get the subject, naming what the visitor wants when they said so.
+     */
+    private function subjectLine(): string
+    {
+        $purpose = $this->enquiry->purpose ? " ({$this->enquiry->purpose->label()})" : '';
+
+        return "{$this->enquiry->source->label()}{$purpose} from {$this->enquiry->name}";
     }
 
     /**

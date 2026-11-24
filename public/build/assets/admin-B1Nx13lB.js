@@ -1,0 +1,1 @@
+var e=new Intl.DateTimeFormat(`en-GB`,{day:`numeric`,month:`short`,year:`numeric`,hour:`numeric`,minute:`2-digit`,hour12:!0,timeZone:`Asia/Dubai`});function t(t){return t===null?``:e.format(new Date(t))}export{t};

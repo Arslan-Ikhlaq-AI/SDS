@@ -10,13 +10,21 @@ use Illuminate\Database\Seeder;
 class PropertySeeder extends Seeder
 {
     /**
-     * Load the current listings. Safe to run again: existing listings are updated, not duplicated.
+     * Load the first listings into an empty website.
+     *
+     * Listings are managed in the admin panel after that, so nothing is loaded
+     * once any listing exists.
      */
     public function run(): void
     {
+        if (Property::query()->exists()) {
+            return;
+        }
+
         $prefix = config('site.reference_prefix');
 
-        Property::updateOrCreate(['slug' => 'marquis-insignia-1-bedroom-luxurious-apartment'], [
+        Property::create([
+            'slug' => 'marquis-insignia-1-bedroom-luxurious-apartment',
             'reference' => "{$prefix}-1001",
             'title' => 'Marquis Insignia 1 Bedroom Luxurious Apartment',
             'status' => PropertyStatus::ForSale,
@@ -71,9 +79,11 @@ class PropertySeeder extends Seeder
             ],
             'floor_plan_image' => '/images/properties/marquis-insignia/floor-plan.webp',
             'is_featured' => true,
+            'is_published' => true,
         ]);
 
-        Property::updateOrCreate(['slug' => 'bin-sanad-camp-al-quoz'], [
+        Property::create([
+            'slug' => 'bin-sanad-camp-al-quoz',
             'reference' => "{$prefix}-1002",
             'title' => 'Bin Sanad Camp Al Quoz',
             'category' => PropertyCategory::Residential,
@@ -89,6 +99,7 @@ class PropertySeeder extends Seeder
                 '/images/properties/bin-sanad-camp/kitchen.webp',
             ],
             'is_featured' => true,
+            'is_published' => true,
         ]);
     }
 }
